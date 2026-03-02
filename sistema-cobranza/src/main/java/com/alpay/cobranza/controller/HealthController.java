@@ -11,6 +11,16 @@ import java.util.Map;
 @RequestMapping("/api")
 public class HealthController {
 
+    @GetMapping("/")
+    public ResponseEntity<?> rootHealth() {
+        return ResponseEntity.ok(Map.of("status", "ok"));
+    }
+
+    @GetMapping("/healthz")
+    public ResponseEntity<?> healthz() {
+        return ResponseEntity.ok(Map.of("status", "ok"));
+    }
+
     @GetMapping("/health")
     public ResponseEntity<?> health() {
         return ResponseEntity.ok(Map.of("status", "ok"));
