@@ -1,6 +1,7 @@
 services:
   - type: web
     name: alpay-backend
+    env: java
     plan: free
     rootDir: sistema-cobranza
     buildCommand: ./mvnw clean package -DskipTests
