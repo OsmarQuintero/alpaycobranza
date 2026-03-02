@@ -2,10 +2,10 @@ services:
   - type: web
     name: alpay-backend
     env: docker
-    plan: starter
+    plan: free
     rootDir: sistema-cobranza
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /api/auth/login
+    healthCheckPath: /api/health
     envVars:
       - key: DB_URL
         sync: false
