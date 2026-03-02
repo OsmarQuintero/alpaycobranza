@@ -1,10 +1,9 @@
 services:
   - type: web
     name: alpay-backend
-    runtime: java
     plan: free
     rootDir: sistema-cobranza
-    buildCommand: ./mvnw clean package -DskipTests -Djava.version=17
+    buildCommand: ./mvnw clean package -DskipTests
     startCommand: java -jar target/sistema-cobranza-0.0.1-SNAPSHOT.jar
     healthCheckPath: /api/auth/login
     envVars:
