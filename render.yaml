@@ -1,11 +1,10 @@
 services:
   - type: web
     name: alpay-backend
-    env: java
+    env: docker
     plan: starter
     rootDir: sistema-cobranza
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/sistema-cobranza-0.0.1-SNAPSHOT.jar
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /api/auth/login
     envVars:
       - key: DB_URL
