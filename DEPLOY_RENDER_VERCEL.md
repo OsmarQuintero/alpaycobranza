@@ -1,59 +1,68 @@
 # Deploy Guide (Render + Vercel)
 
-## 1) Backend (Render)
+## 1) Backend on Render (Free)
 
-- Service root: `sistema-cobranza`
-- Build command: `./mvnw clean package -DskipTests`
-- Start command: `java -jar target/sistema-cobranza-0.0.1-SNAPSHOT.jar`
-- Blueprint file: `render.yaml` (already added)
+Create a **Web Service** from this repo with:
 
-Set these env vars in Render:
+- `Root Directory`: `sistema-cobranza`
+- `Environment`: `Docker`
+- `Plan`: `Free`
+- `Health Check Path`: `/api/health`
+
+`render.yaml` is already configured for this.
+
+### Required Render Environment Variables
+
+Add these in Render -> Service -> Environment:
 
 - `DB_URL`
 - `DB_USER`
 - `DB_PASS`
 - `JWT_SECRET`
-- `JWT_EXPIRATION_MS`
-- `CONTACT_TO`
-- `CORS_ALLOWED_ORIGIN_PATTERNS` (example: `https://tu-frontend.vercel.app`)
-- `MAIL_HOST`
-- `MAIL_PORT`
-- `MAIL_USER`
-- `MAIL_PASS`
-- `MULTIPART_MAX_FILE_SIZE`
-- `MULTIPART_MAX_REQUEST_SIZE`
+- `CORS_ALLOWED_ORIGIN_PATTERNS`
 
-Notes:
+Recommended extras:
 
-- `application.properties` is already configured to read env vars.
-- `server.port` is mapped from `PORT` automatically.
+- `JPA_DDL_AUTO=update` (first deploy), then change to `validate`
+- `JWT_EXPIRATION_MS=86400000`
+- `CONTACT_TO=osmdigitalweb@gmail.com`
+- `JPA_SHOW_SQL=false`
+- `MULTIPART_MAX_FILE_SIZE=10MB`
+- `MULTIPART_MAX_REQUEST_SIZE=20MB`
+- `MAIL_HOST`, `MAIL_PORT`, `MAIL_USER`, `MAIL_PASS` (if email is enabled)
 
-## 2) Frontend (Vercel)
+### DB_URL format example (MySQL)
 
-Before deploy, edit:
+```text
+jdbc:mysql://HOST:PORT/railway?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+```
+
+## 2) Frontend on Vercel
+
+This project already points production to:
 
 - `frontend/src/environments/environment.prod.ts`
+- `apiUrl: 'https://alpaycobranza.onrender.com/api'`
 
-Set:
+If your backend URL changes, update this file before deploy.
 
-- `apiUrl: 'https://TU_BACKEND_PUBLICO/api'`
+Vercel settings:
 
-Vercel project settings:
-
-- Framework: Angular
+- Framework: `Angular`
+- Root directory: `frontend`
 - Build command: `npm run build`
 - Output directory: `dist/frontend/browser`
 
-`frontend/vercel.json` was added to support SPA route rewrites.
+## 3) Final checks
 
-## 3) After deploy checks
+1. Open backend URL: `https://alpaycobranza.onrender.com/api/health`
+2. Must return HTTP `200` and JSON `{ "status": "ok" }`
+3. Open frontend domain and login
+4. Verify `/api/clientes`, `/api/cuentas`, `/api/pagos` requests succeed
 
-- Login works from frontend domain
-- `GET /api/clientes` works
-- Client creation with INE/selfie works
-- Route navigation opens Google Maps by address
+## 4) If deploy fails
 
-## 4) Security
-
-Do not commit real secrets in `application.properties`.
-Use only hosting env vars.
+- `Healthcheck failed`: verify path is `/api/health`
+- `JDBCConnectionException`: `DB_URL/DB_USER/DB_PASS` are incorrect
+- `403 from frontend`: add frontend domain to `CORS_ALLOWED_ORIGIN_PATTERNS`
+- `404 on API`: wrong `environment.prod.ts` backend URL

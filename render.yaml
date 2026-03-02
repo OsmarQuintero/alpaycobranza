@@ -13,8 +13,14 @@ services:
         sync: false
       - key: DB_PASS
         sync: false
+      - key: JPA_DDL_AUTO
+        value: update
+      - key: JPA_SHOW_SQL
+        value: "false"
       - key: JWT_SECRET
         sync: false
+      - key: JWT_EXPIRATION_MS
+        value: "86400000"
       - key: CONTACT_TO
         sync: false
       - key: CORS_ALLOWED_ORIGIN_PATTERNS
@@ -27,3 +33,7 @@ services:
         sync: false
       - key: MAIL_PASS
         sync: false
+      - key: MULTIPART_MAX_FILE_SIZE
+        value: 10MB
+      - key: MULTIPART_MAX_REQUEST_SIZE
+        value: 20MB
