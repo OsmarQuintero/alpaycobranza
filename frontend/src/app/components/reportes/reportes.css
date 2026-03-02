@@ -1,0 +1,272 @@
+﻿/* src/app/components/reportes/reportes.css */
+.reportes-page {
+  color: #e2e8f0;
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+}
+
+.report-header__left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.report-header__icon {
+  font-size: 1.8rem;
+  color: #3b82f6;
+}
+
+.report-header h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.report-header p {
+  margin: 0;
+  color: #9fb2c6;
+  font-size: 0.9rem;
+}
+
+.report-header__meta {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+  color: #9fb2c6;
+  font-size: 0.85rem;
+}
+
+.kpi-card {
+  text-align: center;
+  padding: 18px;
+}
+
+.kpi-card i {
+  display: inline-block;
+  font-size: 1.3rem;
+  margin-bottom: 8px;
+}
+
+.kpi-card h3 {
+  margin: 0 0 6px;
+  font-size: 1.25rem;
+  color: #ffffff;
+}
+
+.kpi-card span {
+  color: #9fb2c6;
+  font-size: 0.85rem;
+}
+
+.report-panel {
+  padding: 18px 20px;
+}
+
+.report-panel__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: #ffffff;
+}
+
+.report-panel__title i {
+  color: #38bdf8;
+}
+
+.report-panel__title h5 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.report-panel__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #cbd5f5;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+
+.report-panel__progress {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.report-panel__progress .bar {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.pdf-only {
+  display: none;
+}
+
+.pdf-sheet {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 18px;
+  padding: 32px 36px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+}
+
+.pdf-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+}
+
+.pdf-brand {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.pdf-brand img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.pdf-brand h1 {
+  font-size: 1.6rem;
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+
+.pdf-brand p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.pdf-meta {
+  display: grid;
+  gap: 8px;
+  text-align: right;
+  color: #475569;
+  font-size: 0.85rem;
+}
+
+.pdf-meta strong {
+  color: #0f172a;
+}
+
+.pdf-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.pdf-kpi {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.pdf-kpi p {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pdf-kpi h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #0f172a;
+}
+
+.pdf-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.pdf-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.pdf-card h4 {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+.pdf-stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.pdf-stat strong {
+  color: #0f172a;
+}
+
+.pdf-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.pdf-progress .bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9);
+}
+
+.pdf-footer {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 12px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.glass-morphism {
+  background: rgba(10, 18, 32, 0.92) !important;
+  border: 1px solid rgba(66, 90, 120, 0.4) !important;
+  box-shadow: 0 24px 48px rgba(4, 10, 20, 0.35);
+  border-radius: 18px;
+}
+
+.text-white-50 { color: #9fb2c6 !important; }
+.bg-white-5 { background: rgba(15, 23, 42, 0.6) !important; }
+.border-white-10 { border-color: rgba(66, 90, 120, 0.4) !important; }
+
+@media (max-width: 900px) {
+  .pdf-kpis,
+  .pdf-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .report-header__meta {
+    text-align: left;
+  }
+}

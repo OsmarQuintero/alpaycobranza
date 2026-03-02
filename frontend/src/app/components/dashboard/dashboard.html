@@ -1,0 +1,132 @@
+﻿<div class="page-shell">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">Panel de gestion</p>
+      <h1>Resumen de cobranza</h1>
+      <p class="page-subtitle">KPIs en tiempo real y tendencia operativa.</p>
+    </div>
+    <button class="btn btn-ghost" (click)="refresh()">
+      <i class="bi bi-arrow-clockwise"></i> Actualizar
+    </button>
+  </header>
+
+  @if (isLoading()) {
+    <div class="card card-ghost p-5 text-center">Cargando datos...</div>
+  } @else {
+    @if (!isCobrador()) {
+      <section class="kpi-grid">
+        @for (kpi of kpis(); track kpi.title) {
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-label">{{ kpi.title }}</span>
+              <i class="bi {{ kpi.icon }}"></i>
+            </div>
+            <div class="kpi-value">{{ kpi.value | currency:'MXN':'symbol-narrow':'1.0-0' }}</div>
+            <div class="kpi-meta">
+              <span>{{ kpi.subtitle }}</span>
+              <span class="kpi-trend">{{ kpi.trend }}</span>
+            </div>
+          </div>
+        }
+      </section>
+
+      <section class="grid-two">
+        <div class="card card-surface">
+          <div class="card-header">
+            <div>
+              <h3>Cobranza de la semana</h3>
+              <p>Ultimos 7 dias de ingresos.</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-bars">
+              @for (dia of pagosSemana(); track dia.key) {
+                <div class="bar-item">
+                  <div class="bar" [style.height.%]="dia.percent"></div>
+                  <span>{{ dia.label }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-surface">
+          <div class="card-header">
+            <div>
+              <h3>Cuentas con mayor saldo</h3>
+              <p>Top de exposicion en cartera.</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="progress-list">
+              @for (cuenta of saldoSeries(); track cuenta.label) {
+                <div class="progress-item">
+                  <div class="progress-meta">
+                    <span>{{ cuenta.label }}</span>
+                    <span>{{ cuenta.value | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" [style.width.%]="cuenta.percent"></div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid-two">
+        <div class="card card-surface">
+          <div class="card-header">
+            <div>
+              <h3>Actividad reciente</h3>
+              <p>Pagos y creditos recientes.</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="activity-list">
+              @for (actividad of actividades(); track $index) {
+                <div class="activity-item">
+                  <div>
+                    <div class="activity-title">{{ actividad.descripcion }}</div>
+                    <div class="activity-sub">{{ actividad.clienteNombre }}</div>
+                  </div>
+                  <div class="activity-meta">
+                    <span>{{ actividad.monto | currency:'MXN':'symbol-narrow':'1.0-0' }}</span>
+                    <small>{{ getTiempoTranscurrido(actividad.fecha) }}</small>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-surface quick-actions">
+          <div class="card-header">
+            <div>
+              <h3>Acciones rapidas</h3>
+              <p>Atajos para operaciones diarias.</p>
+            </div>
+          </div>
+          <div class="card-body">
+            <button class="btn btn-primary" (click)="registrarPago()">
+              <i class="bi bi-plus-circle"></i> Registrar pago
+            </button>
+            <button class="btn btn-ghost" (click)="nuevoCliente()">
+              <i class="bi bi-person-plus"></i> Nuevo cliente
+            </button>
+            <button class="btn btn-ghost" (click)="nuevoCredito()">
+              <i class="bi bi-credit-card"></i> Nuevo credito
+            </button>
+          </div>
+        </div>
+      </section>
+    }
+
+    @if (isCobrador()) {
+      <section class="grid-two">
+        <app-ruta-diaria [clientes]="clientes()"></app-ruta-diaria>
+      </section>
+    }
+  }
+</div>

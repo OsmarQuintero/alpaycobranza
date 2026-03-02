@@ -1,0 +1,64 @@
+<section id="contact" class="py-5 contact-section">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-6">
+        <h2 class="fw-bold text-white mb-3">Contacto</h2>
+        <p class="text-soft mb-4">
+          Agenda una demostracion o solicita mas informacion. Respondemos en menos de 24 horas habiles.
+        </p>
+
+        <div class="contact-info p-4">
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <i class="bi bi-envelope-at fs-4 text-accent"></i>
+            <div>
+              <p class="mb-0 text-white">Correo</p>
+              <p class="small text-soft mb-0">osmdigitalweb@gmail.com</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-start gap-3 mb-3">
+            <i class="bi bi-telephone fs-4 text-accent"></i>
+            <div>
+              <p class="mb-0 text-white">Telefono</p>
+              <p class="small text-soft mb-0">+52 8121918527</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-start gap-3">
+            <i class="bi bi-geo-alt fs-4 text-accent"></i>
+            <div>
+              <p class="mb-0 text-white">Ubicacion</p>
+              <p class="small text-soft mb-0">Monterrey, Nuevo Leon</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <form class="contact-card p-4" [formGroup]="form" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label class="form-label text-soft" for="contactName">Nombre</label>
+            <input id="contactName" type="text" class="form-control form-control-lg" placeholder="Tu nombre" formControlName="name">
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-soft" for="contactEmail">Correo</label>
+            <input id="contactEmail" type="email" class="form-control form-control-lg" placeholder="tu@correo.com" formControlName="email">
+          </div>
+          <div class="mb-3">
+            <label class="form-label text-soft" for="contactCompany">Empresa</label>
+            <input id="contactCompany" type="text" class="form-control form-control-lg" placeholder="Nombre de tu empresa" formControlName="company">
+          </div>
+          <div class="mb-4">
+            <label class="form-label text-soft" for="contactMessage">Mensaje</label>
+            <textarea id="contactMessage" class="form-control form-control-lg" rows="4" placeholder="Cuentanos tu necesidad" formControlName="message"></textarea>
+          </div>
+
+          <div *ngIf="status === 'ok'" class="alert alert-success">Tu mensaje fue enviado correctamente.</div>
+          <div *ngIf="status === 'error'" class="alert alert-danger">No se pudo enviar. Intenta de nuevo.</div>
+
+          <button type="submit" class="btn btn-cta btn-lg w-100" [disabled]="status === 'sending'">
+            {{ status === 'sending' ? 'Enviando...' : 'Enviar solicitud' }}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

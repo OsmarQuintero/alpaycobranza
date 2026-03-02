@@ -1,0 +1,76 @@
+<nav class="navbar navbar-expand-lg auth-nav">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center py-0" routerLink="/">
+      <img src="assets/img/features/logo.png" alt="ALPAY" class="navbar-logo">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavPolicies">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavPolicies">
+      <ul class="navbar-nav mx-auto gap-4">
+        <li class="nav-item"><a routerLink="/acerca" class="nav-link text-secondary fw-semibold">Acerca de</a></li>
+        <li class="nav-item"><a routerLink="/caracteristicas" class="nav-link text-secondary fw-semibold">Caracteristicas</a></li>
+        <li class="nav-item"><a routerLink="/servicios" class="nav-link text-secondary fw-semibold">Servicios</a></li>
+        <li class="nav-item"><a routerLink="/politicas" class="nav-link text-secondary fw-semibold">Politicas</a></li>
+      </ul>
+      <div class="d-flex gap-3 align-items-center ms-auto">
+        <div class="d-flex gap-2">
+          <a href="https://linkedin.com" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+          <a href="https://github.com" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" title="GitHub"><i class="bi bi-github"></i></a>
+          <a href="https://twitter.com" target="_blank" class="btn btn-sm btn-outline-secondary rounded-circle" title="Twitter"><i class="bi bi-twitter"></i></a>
+        </div>
+        <div class="vr"></div>
+        <a [routerLink]="['/login']" class="btn btn-link text-decoration-none text-secondary fw-semibold">Iniciar sesion</a>
+        <a [routerLink]="['/register']" class="btn btn-primary-moon shadow-sm">Comenzar ahora</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="public-container">
+  <p class="page-kicker">POLITICAS</p>
+  <h1 class="page-title">Politicas de uso y operacion</h1>
+  <p class="page-subtitle">Estas politicas rigen el uso de la plataforma para mantener seguridad, continuidad y control operativo.</p>
+
+  <section class="public-section">
+    <h2>1. Control de acceso y autenticacion</h2>
+    <p>Todos los usuarios deben operar con credenciales personales. No se permite compartir cuentas entre miembros del equipo.</p>
+    <p>Los permisos estan definidos por rol y deben respetarse durante toda la operacion.</p>
+  </section>
+
+  <section class="public-section">
+    <h2>2. Proteccion de datos</h2>
+    <p>La informacion de clientes, creditos y pagos se considera confidencial y solo puede usarse para fines operativos autorizados.</p>
+    <p>Queda prohibida la extraccion o divulgacion no autorizada de datos.</p>
+  </section>
+
+  <section class="public-section">
+    <h2>3. Registro de acciones</h2>
+    <p>Las acciones de cobranza deben quedar registradas para mantener trazabilidad y soporte en auditorias internas.</p>
+    <p>La edicion de registros debe seguir control administrativo y justificacion operativa.</p>
+  </section>
+
+  <section class="public-section">
+    <h2>4. Continuidad del servicio</h2>
+    <p>Las solicitudes de cambio, incidencias o nuevas funciones se gestionan por el canal oficial del sistema.</p>
+    <p>El incumplimiento de estas politicas puede implicar suspension de acceso segun lineamientos internos.</p>
+  </section>
+</main>
+
+<footer class="py-5 footer-public">
+  <div class="container text-center">
+    <div class="row align-items-center">
+      <div class="col-md-4 text-md-start">
+        <p class="fw-bold text-white mb-0">ALPAY<span class="text-accent">.</span></p>
+        <p class="small text-white">© 2026 Universidad Tecnologica Gral. Mariano Escobedo</p>
+      </div>
+      <div class="col-md-8 text-md-end">
+        <span class="text-slate-500 small">Equipo de desarrollo:</span>
+        <div class="d-flex justify-content-md-end gap-3 mt-1 flex-wrap">
+          <span class="badge bg-light text-dark border">Osmar Isaias Quintero Valadez</span>
+          <span class="badge bg-light text-dark border">David Azael Lopez Dominguez</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

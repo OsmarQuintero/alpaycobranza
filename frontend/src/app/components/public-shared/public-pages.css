@@ -1,0 +1,140 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-image: url('/assets/img/features/mapa-mundial.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+:host::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.9) 30%, rgba(15, 23, 42, 0.78) 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  transition: transform 0.25s ease;
+  filter: brightness(1.2);
+}
+
+.navbar-logo:hover {
+  transform: scale(1.03);
+}
+
+.auth-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary-moon {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+  color: #fff;
+}
+
+.btn-primary-moon:hover {
+  background-color: #3730a3;
+  border-color: #3730a3;
+  color: #fff;
+}
+
+.public-container {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 92%);
+  margin: 0 auto;
+  padding: 2.2rem 0 2.8rem;
+  color: #e2e8f0;
+}
+
+.page-kicker {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #7fc3ff;
+  font-size: 0.78rem;
+  margin-bottom: 0.5rem;
+}
+
+.page-title {
+  color: #f8fafc;
+  margin-bottom: 0.6rem;
+}
+
+.page-subtitle {
+  color: #b4c5dc;
+  margin-bottom: 1.6rem;
+}
+
+.public-section {
+  margin-bottom: 1.35rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(125, 151, 185, 0.25);
+}
+
+.public-section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.public-section h2 {
+  color: #f8fafc;
+  margin-bottom: 0.45rem;
+}
+
+.public-section h3 {
+  color: #dbeafe;
+  margin-top: 0.8rem;
+  margin-bottom: 0.3rem;
+  font-size: 1.06rem;
+}
+
+.public-section p {
+  color: #c0d1e8;
+  margin-bottom: 0.45rem;
+  line-height: 1.6;
+}
+
+.public-section ul {
+  padding-left: 1.2rem;
+  color: #cfe0f6;
+}
+
+.public-section li {
+  margin-bottom: 0.35rem;
+}
+
+.footer-public {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(26, 26, 46, 0.92));
+  border-top: 1px solid rgba(125, 151, 185, 0.25);
+}
+
+.footer-public .badge {
+  font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .navbar-logo {
+    height: 32px;
+    max-width: 140px;
+  }
+
+  .public-container {
+    width: min(980px, 94%);
+    padding-top: 1.6rem;
+  }
+}

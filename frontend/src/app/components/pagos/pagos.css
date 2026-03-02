@@ -1,0 +1,90 @@
+.glass-morphism {
+  background: rgba(10, 18, 32, 0.92) !important;
+  border: 1px solid rgba(66, 90, 120, 0.4) !important;
+  box-shadow: 0 24px 48px rgba(4, 10, 20, 0.35);
+  border-radius: 18px;
+}
+
+.bg-white-5 { background: rgba(15, 23, 42, 0.6) !important; }
+.border-white-10 { border-color: rgba(66, 90, 120, 0.4) !important; }
+.text-white-50 { color: #9fb2c6 !important; }
+.text-cyan { color: #38bdf8; }
+
+.search-box {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8aa0b6;
+  z-index: 10;
+}
+
+.search-input {
+  padding-left: 45px;
+  background: rgba(8, 16, 30, 0.7) !important;
+  border: 1px solid rgba(77, 103, 140, 0.45) !important;
+  color: #e2e8f0 !important;
+  border-radius: 12px;
+}
+
+.search-input:focus,
+.form-control:focus {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.15);
+}
+
+.cliente-card {
+  background: rgba(8, 16, 30, 0.7);
+  border: 1px solid rgba(66, 90, 120, 0.4);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cliente-card:hover {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.cliente-card.selected {
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 0 12px 30px rgba(14, 165, 233, 0.2);
+}
+
+.input-group-text {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border-color: rgba(66, 90, 120, 0.4) !important;
+  color: #cbd5f5 !important;
+}
+
+.form-control {
+  background: rgba(8, 16, 30, 0.7) !important;
+  border: 1px solid rgba(77, 103, 140, 0.45) !important;
+  color: #e2e8f0 !important;
+}
+
+.btn-outline-light {
+  border-color: rgba(148, 163, 184, 0.5);
+  color: #e2e8f0;
+}
+
+.promesas-list {
+  display: grid;
+  gap: 10px;
+}
+
+.promesa-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(66, 90, 120, 0.4);
+  border-radius: 12px;
+  background: rgba(8, 16, 30, 0.7);
+}

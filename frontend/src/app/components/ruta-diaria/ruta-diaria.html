@@ -1,0 +1,92 @@
+<div class="ruta-card card-surface">
+  <div class="card-header route-head">
+    <div>
+      <h3>{{ titulo }}</h3>
+      <p>Ruta operativa estilo delivery con direccionamiento, prioridades y metas del dia.</p>
+    </div>
+    <div class="ruta-actions">
+      <button class="btn btn-ghost" (click)="centrarEnMiUbicacion()">
+        <i class="bi bi-geo"></i> Ubicacion actual
+      </button>
+      <button class="btn btn-primary" (click)="recalcularRuta()">
+        <i class="bi bi-arrow-repeat"></i> Optimizar ruta
+      </button>
+    </div>
+  </div>
+
+  <div class="objetivos-grid" *ngIf="paradas.length">
+    <div class="objetivo-item">
+      <span class="label">Objetivos</span>
+      <strong>{{ objetivosCumplidos }}/{{ objetivosTotales }}</strong>
+    </div>
+    <div class="objetivo-item">
+      <span class="label">Distancia estimada</span>
+      <strong>{{ totalRutaKm }} km</strong>
+    </div>
+    <div class="objetivo-item">
+      <span class="label">Tiempo estimado</span>
+      <strong>{{ totalRutaMin }} min</strong>
+    </div>
+    <div class="objetivo-item">
+      <span class="label">Prioridad alta</span>
+      <strong>{{ pendientesAltaPrioridad }}/{{ paradasAltaPrioridad }}</strong>
+    </div>
+  </div>
+
+  <div class="progress-wrap" *ngIf="paradas.length">
+    <div class="progress-meta">
+      <span>{{ tituloEstadoRuta }}</span>
+      <span>{{ progresoPct }}%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" [style.width.%]="progresoPct"></div>
+    </div>
+  </div>
+
+  <div class="card-body route-layout">
+    <div class="map-wrap">
+      <div id="ruta-map"></div>
+      <div class="map-overlay" *ngIf="!paradas.length">
+        <i class="bi bi-map"></i>
+        <p>No hay clientes con geolocalizacion registrada.</p>
+      </div>
+      <div class="map-overlay error" *ngIf="errorMapa">
+        <i class="bi bi-exclamation-triangle"></i>
+        <p>{{ errorMapa }}</p>
+      </div>
+    </div>
+
+    <div class="ruta-list" *ngIf="paradas.length">
+      <div class="ruta-item" *ngFor="let parada of paradas; let i = index" [ngClass]="parada.estado?.toLowerCase()">
+        <div class="ruta-index">{{ i + 1 }}</div>
+
+        <div class="ruta-info">
+          <div class="ruta-title">{{ parada.nombre }}</div>
+          <div class="ruta-status-row">
+            <span class="chip prioridad" [ngClass]="(parada.prioridad || 'BAJA').toLowerCase()">{{ parada.prioridad }}</span>
+            <span class="chip estado" [ngClass]="(parada.estado || 'PENDIENTE').toLowerCase()">{{ parada.estado }}</span>
+          </div>
+          <div class="ruta-meta">
+            <span><i class="bi bi-geo-alt"></i> {{ parada.direccion || 'Sin direccion' }}</span>
+            <span><i class="bi bi-clock"></i> {{ parada.ventana }}</span>
+            <span><i class="bi bi-signpost"></i> {{ parada.distanciaKm || 0 }} km</span>
+            <span><i class="bi bi-stopwatch"></i> {{ parada.etaMin || 0 }} min</span>
+          </div>
+        </div>
+
+        <div class="ruta-action">
+          <a class="btn btn-sm btn-ghost" target="_blank"
+             [href]="getGoogleMapsNavigationUrl(parada)">
+            Navegar
+          </a>
+          <button class="btn btn-sm btn-primary" type="button" (click)="iniciarParada(i)" [disabled]="parada.estado === 'COMPLETADA'">
+            Iniciar
+          </button>
+          <button class="btn btn-sm btn-success" type="button" (click)="completarParada(i)" [disabled]="parada.estado === 'COMPLETADA'">
+            Completar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

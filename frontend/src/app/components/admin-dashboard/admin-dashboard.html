@@ -1,0 +1,122 @@
+<div class="page-shell">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">Panel Administrador</p>
+      <h1>Vision general de usuarios y cartera</h1>
+      <p class="page-subtitle">Control de seguridad, promesas de pago y expediente documental.</p>
+    </div>
+    <button class="btn btn-ghost" (click)="cargar()">
+      <i class="bi bi-arrow-clockwise"></i> Actualizar
+    </button>
+  </header>
+
+  @if (isLoading()) {
+    <div class="card card-ghost p-5 text-center">Cargando informacion...</div>
+  } @else {
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Usuarios totales</div>
+        <div class="kpi-value">{{ totalUsuarios() }}</div>
+        <div class="kpi-meta">Registros activos y en revision</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Administradores</div>
+        <div class="kpi-value">{{ admins() }}</div>
+        <div class="kpi-meta">Control y operaciones</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Cobradores</div>
+        <div class="kpi-value">{{ cobradores() }}</div>
+        <div class="kpi-meta">Equipo de campo</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Promesas pendientes</div>
+        <div class="kpi-value">{{ promesasPendientes() }}</div>
+        <div class="kpi-meta">Seguimiento de cobranza</div>
+      </div>
+    </section>
+
+    <section class="card card-surface mt-4">
+      <div class="card-header">
+        <div>
+          <h3>Accesos recientes</h3>
+          <p>Resumen rapido del estado de usuarios por rol.</p>
+        </div>
+        <a class="btn btn-primary" routerLink="/admin/usuarios">Administrar usuarios</a>
+      </div>
+      <div class="card-body">
+        <div class="admin-summary">
+          <div class="summary-item">
+            <span class="summary-label">ADMIN</span>
+            <span class="summary-value">{{ admins() }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">COBRADOR</span>
+            <span class="summary-value">{{ cobradores() }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">ACTIVOS</span>
+            <span class="summary-value">{{ activos() }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card card-surface mt-4">
+      <div class="card-header">
+        <div>
+          <h3>Expediente de clientes (solo admin)</h3>
+          <p>Datos de cliente y documentos de verificacion (INE y selfie).</p>
+        </div>
+      </div>
+      <div class="card-body table-wrap">
+        <table class="table-expediente">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>RFC</th>
+              <th>Telefono</th>
+              <th>Direccion</th>
+              <th>Estado</th>
+              <th>INE</th>
+              <th>Selfie</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cliente of expedientes(); track cliente.id) {
+              <tr>
+                <td>{{ cliente.nombre }}</td>
+                <td>{{ cliente.rfc || '-' }}</td>
+                <td>{{ cliente.telefono || '-' }}</td>
+                <td>{{ cliente.direccion || '-' }}</td>
+                <td>{{ cliente.verificacionEstado || 'PENDIENTE' }}</td>
+                <td>
+                  @if (cliente.ineUrl) {
+                    <a [href]="resolveMediaUrl(cliente.ineUrl)" target="_blank">
+                      <img class="doc-thumb" [src]="resolveMediaUrl(cliente.ineUrl)" alt="INE">
+                    </a>
+                  } @else {
+                    <span>-</span>
+                  }
+                </td>
+                <td>
+                  @if (cliente.selfieUrl) {
+                    <a [href]="resolveMediaUrl(cliente.selfieUrl)" target="_blank">
+                      <img class="doc-thumb" [src]="resolveMediaUrl(cliente.selfieUrl)" alt="Selfie">
+                    </a>
+                  } @else {
+                    <span>-</span>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7">No hay expedientes de clientes.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+</div>

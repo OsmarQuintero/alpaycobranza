@@ -1,0 +1,241 @@
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-white fw-bold mb-2">
+        <i class="bi bi-cash-coin me-2 text-success"></i>
+        Registro de Pagos
+      </h2>
+      <p class="text-white-50">Registra abonos y gestiona promesas de pago por cliente.</p>
+    </div>
+  </div>
+
+  @if (showSuccess()) {
+    <div class="alert alert-success glass-morphism" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      Pago registrado correctamente.
+    </div>
+  }
+
+  @if (showPromesaSuccess()) {
+    <div class="alert alert-info glass-morphism" role="alert">
+      <i class="bi bi-calendar-check me-2"></i>
+      Promesa de pago registrada.
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-danger glass-morphism" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ errorMessage() }}
+      <button type="button" class="btn-close" (click)="errorMessage.set('')"></button>
+    </div>
+  }
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card glass-morphism border-0 shadow-lg h-100">
+        <div class="card-header bg-transparent border-bottom border-white-10 py-3">
+          <h5 class="mb-0 fw-bold text-white">
+            <i class="bi bi-search me-2"></i>
+            Buscar Cliente
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="search-box mb-3">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              class="form-control search-input"
+              placeholder="Buscar por nombre o ID..."
+              [(ngModel)]="searchTerm"
+              [value]="searchTerm()">
+          </div>
+
+          <div class="clientes-list">
+            @if (cuentaSeleccionada()) {
+              <div class="cliente-card selected">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <h6 class="mb-1 fw-bold text-white">{{ cuentaSeleccionada()!.clienteNombre }}</h6>
+                    <p class="mb-1 text-white-50 small">Cuenta #{{ cuentaSeleccionada()!.id }}</p>
+                    <div class="mt-2">
+                      <span class="badge bg-danger me-2">Saldo: {{ formatCurrency(cuentaSeleccionada()!.saldo) }}</span>
+                      <span class="badge bg-info">Limite: {{ formatCurrency(cuentaSeleccionada()!.limiteCredito) }}</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-sm btn-outline-light" (click)="limpiarSeleccion()" title="Cambiar cliente">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+              </div>
+            } @else {
+              @if (searchTerm()) {
+                @for (cuenta of cuentasFiltradas; track cuenta.id) {
+                  <div class="cliente-card" (click)="seleccionarCuenta(cuenta)">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h6 class="mb-1 text-white">{{ cuenta.clienteNombre }}</h6>
+                        <p class="mb-0 text-white-50 small">Cuenta #{{ cuenta.id }} - Adeudo: {{ formatCurrency(cuenta.saldo) }}</p>
+                      </div>
+                      <i class="bi bi-chevron-right text-white-50"></i>
+                    </div>
+                  </div>
+                } @empty {
+                  <div class="text-center py-4">
+                    <i class="bi bi-inbox fs-1 text-white-50 d-block mb-2"></i>
+                    <p class="text-white-50">No se encontraron clientes</p>
+                  </div>
+                }
+              } @else {
+                <div class="text-center py-5">
+                  <i class="bi bi-person-search fs-1 text-cyan d-block mb-3"></i>
+                  <p class="text-white-50">Escribe para buscar un cliente</p>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card glass-morphism border-0 shadow-lg mb-4">
+        <div class="card-header bg-transparent border-bottom border-white-10 py-3">
+          <h5 class="mb-0 fw-bold text-white">
+            <i class="bi bi-receipt me-2"></i>
+            Detalles del Pago
+          </h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="onSubmit()">
+            <div class="mb-4">
+              <label class="form-label text-white fw-semibold">Monto del Pago</label>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text bg-white-5 border-white-10 text-white">$</span>
+                <input
+                  type="number"
+                  class="form-control form-control-lg bg-white-5 border-white-10 text-white"
+                  [(ngModel)]="pagoForm.monto"
+                  name="monto"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                  [disabled]="!cuentaSeleccionada()"
+                  required>
+              </div>
+              @if (cuentaSeleccionada() && pagoForm.monto > 0) {
+                <div class="mt-2 p-3 bg-white-5 rounded">
+                  <div class="d-flex justify-content-between text-white-50 mb-2">
+                    <span>Saldo actual:</span>
+                    <span>{{ formatCurrency(cuentaSeleccionada()!.saldo) }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between text-white-50 mb-2">
+                    <span>Monto a pagar:</span>
+                    <span class="text-success">-{{ formatCurrency(pagoForm.monto) }}</span>
+                  </div>
+                  <hr class="border-white-10">
+                  <div class="d-flex justify-content-between fw-bold">
+                    <span class="text-white">Saldo restante:</span>
+                    <span [class]="calcularSaldoRestante() <= 0 ? 'text-success' : 'text-warning'">
+                      {{ formatCurrency(calcularSaldoRestante()) }}
+                    </span>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label text-white fw-semibold">Metodo de Pago</label>
+              <div class="btn-group w-100" role="group">
+                <input type="radio" class="btn-check" name="metodo_pago" id="efectivo" [(ngModel)]="pagoForm.metodo_pago" value="EFECTIVO" [disabled]="!cuentaSeleccionada()">
+                <label class="btn btn-outline-success" for="efectivo">Efectivo</label>
+
+                <input type="radio" class="btn-check" name="metodo_pago" id="transferencia" [(ngModel)]="pagoForm.metodo_pago" value="TRANSFERENCIA" [disabled]="!cuentaSeleccionada()">
+                <label class="btn btn-outline-info" for="transferencia">Transferencia</label>
+
+                <input type="radio" class="btn-check" name="metodo_pago" id="tarjeta" [(ngModel)]="pagoForm.metodo_pago" value="TARJETA" [disabled]="!cuentaSeleccionada()">
+                <label class="btn btn-outline-warning" for="tarjeta">Tarjeta</label>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label text-white fw-semibold">Referencia (Opcional)</label>
+              <input
+                type="text"
+                class="form-control bg-white-5 border-white-10 text-white"
+                [(ngModel)]="pagoForm.referencia"
+                name="referencia"
+                placeholder="Numero de referencia"
+                [disabled]="!cuentaSeleccionada()">
+            </div>
+
+            <div class="d-flex gap-3">
+              <button type="submit" class="btn btn-success btn-lg flex-grow-1" [disabled]="!cuentaSeleccionada() || isLoading() || pagoForm.monto <= 0">
+                @if (isLoading()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>Procesando...
+                } @else {
+                  <i class="bi bi-check-circle me-2"></i>Registrar Pago
+                }
+              </button>
+              <button type="button" class="btn btn-outline-light btn-lg" (click)="resetForm()" [disabled]="isLoading()">
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card glass-morphism border-0 shadow-lg">
+        <div class="card-header bg-transparent border-bottom border-white-10 py-3">
+          <h5 class="mb-0 fw-bold text-white">
+            <i class="bi bi-calendar2-check me-2"></i>
+            Promesa de Pago
+          </h5>
+        </div>
+        <div class="card-body">
+          <form class="row g-3" (ngSubmit)="registrarPromesa()">
+            <div class="col-md-4">
+              <label class="form-label text-white-50">Fecha compromiso</label>
+              <input type="date" class="form-control" [(ngModel)]="promesaForm.fechaCompromiso" name="fechaCompromiso" [min]="fechaMinimaPromesa()" [disabled]="!cuentaSeleccionada()">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-white-50">Monto compromiso</label>
+              <input type="number" step="0.01" class="form-control" [(ngModel)]="promesaForm.montoCompromiso" name="montoCompromiso" [disabled]="!cuentaSeleccionada()">
+            </div>
+            <div class="col-md-4 d-grid">
+              <label class="form-label text-white-50">Accion</label>
+              <button type="submit" class="btn btn-info" [disabled]="!cuentaSeleccionada() || isSavingPromesa()">
+                @if (isSavingPromesa()) { Guardando... } @else { Guardar promesa }
+              </button>
+            </div>
+            <div class="col-12">
+              <textarea class="form-control" rows="2" [(ngModel)]="promesaForm.comentario" name="comentario" placeholder="Comentario de compromiso" [disabled]="!cuentaSeleccionada()"></textarea>
+            </div>
+          </form>
+
+          <div class="promesas-list mt-3">
+            @if (promesasCuenta().length) {
+              @for (p of promesasCuenta(); track p.id) {
+                <div class="promesa-item">
+                  <div>
+                    <div class="text-white fw-semibold">{{ formatCurrency(p.montoCompromiso) }} - {{ p.fechaCompromiso }}</div>
+                    <div class="text-white-50 small">{{ p.comentario || 'Sin comentario' }}</div>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge" [class.bg-warning]="p.estado === 'PENDIENTE'" [class.bg-success]="p.estado === 'CUMPLIDA'" [class.bg-danger]="p.estado === 'INCUMPLIDA'">{{ p.estado }}</span>
+                    @if (p.estado === 'PENDIENTE') {
+                      <button class="btn btn-sm btn-outline-success" (click)="marcarPromesa(p, 'CUMPLIDA')">Cumplida</button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="marcarPromesa(p, 'INCUMPLIDA')">Incumplida</button>
+                    }
+                  </div>
+                </div>
+              }
+            } @else {
+              <p class="text-white-50 mb-0">Sin promesas registradas para esta cuenta.</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

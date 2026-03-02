@@ -1,0 +1,32 @@
+.contact-section {
+  background: linear-gradient(135deg, #0f172a 0%, #111827 60%, #0b1220 100%);
+}
+
+.contact-card,
+.contact-info {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.45);
+}
+
+.text-soft {
+  color: #cbd5e1;
+}
+
+.form-control {
+  background-color: rgba(2, 6, 23, 0.4);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #ffffff;
+}
+
+.form-control:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.35);
+  background-color: rgba(2, 6, 23, 0.55);
+  color: #ffffff;
+}
+
+.text-accent {
+  color: #e63946;
+}

@@ -1,0 +1,149 @@
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-white fw-bold mb-2">
+        <i class="bi bi-credit-card me-2 text-warning"></i>
+        Gestión de Créditos
+      </h2>
+      <p class="text-white-50">Monitorea los límites de crédito y saldos pendientes</p>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card glass-morphism border-0 kpi-card">
+        <div class="card-body text-white">
+          <div class="d-flex justify-content-between align-items-start">
+            <span class="text-white-50 small fw-bold">TOTAL CRÉDITOS</span>
+            <i class="bi bi-cash-stack text-info fs-4"></i>
+          </div>
+          <h2 class="fw-bold mt-2">{{ formatCurrency(totalCreditos) }}</h2>
+          <p class="text-info small mb-0">{{ creditosActivos }} cuentas activas</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card glass-morphism border-0 kpi-card border-start border-danger border-4">
+        <div class="card-body text-white">
+          <span class="text-white-50 small fw-bold">TOTAL ADEUDO</span>
+          <h2 class="fw-bold mt-2 text-danger">{{ formatCurrency(totalSaldo) }}</h2>
+          <p class="text-danger small mb-0">Saldo pendiente</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card glass-morphism border-0 kpi-card border-start border-success border-4">
+        <div class="card-body text-white">
+          <span class="text-white-50 small fw-bold">DISPONIBLE</span>
+          <h2 class="fw-bold mt-2 text-success">{{ formatCurrency(totalCreditos - totalSaldo) }}</h2>
+          <p class="text-success small mb-0">Crédito disponible</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card glass-morphism border-0 mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="btn-group" role="group">
+          <input type="radio" class="btn-check" name="filtro" id="todos" 
+            [checked]="filtroEstatus() === 'TODOS'" 
+            (change)="filtroEstatus.set('TODOS')">
+          <label class="btn btn-outline-light" for="todos">Todos</label>
+
+          <input type="radio" class="btn-check" name="filtro" id="activos"
+            [checked]="filtroEstatus() === 'ACTIVA'" 
+            (change)="filtroEstatus.set('ACTIVA')">
+          <label class="btn btn-outline-success" for="activos">Activos</label>
+
+          <input type="radio" class="btn-check" name="filtro" id="suspendidos"
+            [checked]="filtroEstatus() === 'SUSPENDIDA'" 
+            (change)="filtroEstatus.set('SUSPENDIDA')">
+          <label class="btn btn-outline-warning" for="suspendidos">Suspendidos</label>
+
+          <input type="radio" class="btn-check" name="filtro" id="cerrados"
+            [checked]="filtroEstatus() === 'CERRADA'" 
+            (change)="filtroEstatus.set('CERRADA')">
+          <label class="btn btn-outline-secondary" for="cerrados">Cerrados</label>
+        </div>
+        <button class="btn btn-primary" (click)="cargarCreditos()">
+          <i class="bi bi-arrow-clockwise me-2"></i>Actualizar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de créditos -->
+  <div class="card glass-morphism border-0">
+    <div class="card-body">
+      @if (isLoading()) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-cyan" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      } @else {
+        <div class="row g-3">
+          @for (cuenta of creditosFiltrados; track cuenta.id) {
+            <div class="col-md-6">
+              <div class="credito-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h5 class="text-white fw-bold mb-1">{{ cuenta.clienteNombre }}</h5>
+                    <small class="text-white-50">Cuenta #{{ cuenta.id }}</small>
+                  </div>
+                  <span class="badge" [class]="'bg-' + (cuenta.estatus === 'ACTIVA' ? 'success' : cuenta.estatus === 'SUSPENDIDA' ? 'warning' : 'secondary')">
+                    {{ cuenta.estatus }}
+                  </span>
+                </div>
+
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between text-white-50 small mb-2">
+                    <span>Límite de crédito</span>
+                    <span>{{ formatCurrency(cuenta.limiteCredito) }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between text-white small fw-bold mb-2">
+                    <span>Adeudo actual</span>
+                    <span class="text-danger">{{ formatCurrency(cuenta.saldo) }}</span>
+                  </div>
+                  
+                  <div class="progress bg-white-5" style="height: 8px;">
+                    <div class="progress-bar" 
+                      [class]="'bg-' + getColorBarra(getPorcentajeUtilizado(cuenta))"
+                      [style.width.%]="getPorcentajeUtilizado(cuenta)">
+                    </div>
+                  </div>
+                  <small class="text-white-50">{{ getPorcentajeUtilizado(cuenta) | number:'1.0-0' }}% utilizado</small>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="text-white-50 small">
+                    <i class="bi bi-percent me-1"></i>
+                    Tasa: {{ cuenta.tasaInteres }}%
+                  </span>
+                  <div>
+                    <button class="btn btn-sm btn-outline-info me-1" title="Ver detalles">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" title="Registrar pago">
+                      <i class="bi bi-cash-coin"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <div class="col-12 text-center py-5">
+              <i class="bi bi-inbox fs-1 text-white-50 d-block mb-3"></i>
+              <p class="text-white-50">No hay créditos con este filtro</p>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

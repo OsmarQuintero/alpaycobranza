@@ -1,0 +1,217 @@
+﻿<div class="container-fluid py-4 reportes-page">
+  @if (isLoading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-cyan" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  } @else {
+    <section class="report-dashboard">
+      <div class="report-header glass-morphism">
+        <div class="report-header__left">
+          <i class="bi bi-graph-up-arrow report-header__icon"></i>
+          <div>
+            <h2>Reportes y Estadisticas</h2>
+            <p>Analisis completo del desempeño del sistema de cobranza</p>
+          </div>
+        </div>
+        <div class="report-header__meta">
+          <span>Fecha: {{ todayLabel }}</span>
+          <span>Periodo: Mes en curso</span>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-3">
+        <div class="col-md-3">
+          <div class="kpi-card glass-morphism">
+            <i class="bi bi-people text-info"></i>
+            <h3>{{ summary().totalCuentas }}</h3>
+            <span>Total Cuentas</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="kpi-card glass-morphism">
+            <i class="bi bi-cash-coin text-success"></i>
+            <h3>{{ formatCurrency(summary().totalCredito) }}</h3>
+            <span>Credito Otorgado</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="kpi-card glass-morphism">
+            <i class="bi bi-wallet2 text-warning"></i>
+            <h3>{{ formatCurrency(summary().totalSaldo) }}</h3>
+            <span>Saldo Pendiente</span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="kpi-card glass-morphism">
+            <i class="bi bi-graph-up text-danger"></i>
+            <h3>{{ calcularPorcentajeRecuperacion() | number:'1.0-1' }}%</h3>
+            <span>% Recuperacion</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-3">
+        <div class="col-lg-7">
+          <div class="report-panel glass-morphism">
+            <div class="report-panel__title">
+              <i class="bi bi-bar-chart"></i>
+              <h5>Estado de cuentas</h5>
+            </div>
+            <div class="report-panel__row">
+              <span>Activas</span>
+              <strong>{{ summary().cuentasActivas }}</strong>
+            </div>
+            <div class="report-panel__row">
+              <span>En mora</span>
+              <strong>{{ summary().cuentasMora }}</strong>
+            </div>
+            <div class="report-panel__progress">
+              <div class="bar" [style.width.%]="summary().totalCuentas ? (summary().cuentasActivas / summary().totalCuentas) * 100 : 0"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="report-panel glass-morphism">
+            <div class="report-panel__title">
+              <i class="bi bi-currency-dollar"></i>
+              <h5>Analisis financiero</h5>
+            </div>
+            <div class="report-panel__row">
+              <span>Total recaudado</span>
+              <strong class="text-success">{{ formatCurrency(summary().totalRecaudado) }}</strong>
+            </div>
+            <div class="report-panel__row">
+              <span>Promedio por cuenta</span>
+              <strong class="text-info">{{ formatCurrency(summary().promedioSaldo) }}</strong>
+            </div>
+            <div class="report-panel__row">
+              <span>Credito disponible</span>
+              <strong class="text-warning">{{ formatCurrency(summary().totalCredito - summary().totalSaldo) }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-4">
+        <div class="col-md-4">
+          <div class="card glass-morphism border-0 action-card">
+            <div class="card-body text-center">
+              <i class="bi bi-file-earmark-pdf fs-1 text-danger mb-3"></i>
+              <h6 class="text-white fw-bold">Exportar PDF</h6>
+              <p class="text-white-50 small mb-3">Genera reporte completo en PDF</p>
+              <button class="btn btn-outline-danger btn-sm" (click)="exportarPDF()">
+                <i class="bi bi-download me-2"></i>Descargar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card glass-morphism border-0 action-card">
+            <div class="card-body text-center">
+              <i class="bi bi-file-earmark-excel fs-1 text-success mb-3"></i>
+              <h6 class="text-white fw-bold">Exportar Excel</h6>
+              <p class="text-white-50 small mb-3">Descarga datos en formato Excel</p>
+              <button class="btn btn-outline-success btn-sm" (click)="exportarExcel()">
+                <i class="bi bi-download me-2"></i>Descargar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card glass-morphism border-0 action-card">
+            <div class="card-body text-center">
+              <i class="bi bi-envelope fs-1 text-info mb-3"></i>
+              <h6 class="text-white fw-bold">Enviar por Email</h6>
+              <p class="text-white-50 small mb-3">Recibe el reporte en tu correo</p>
+              <button class="btn btn-outline-info btn-sm" (click)="enviarPorEmail()">
+                <i class="bi bi-send me-2"></i>Enviar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  }
+
+  <div id="report-content-pdf" class="pdf-sheet pdf-only" aria-hidden="true">
+    <header class="pdf-header">
+      <div class="pdf-brand">
+        <img src="assets/img/features/logo.png" alt="ALPAY">
+        <div>
+          <h1>Reporte Ejecutivo de Cobranza</h1>
+          <p>Resumen financiero y operatividad del sistema</p>
+        </div>
+      </div>
+      <div class="pdf-meta">
+        <div>
+          <span>Fecha</span>
+          <strong>{{ todayLabel }}</strong>
+        </div>
+        <div>
+          <span>Periodo</span>
+          <strong>Mes en curso</strong>
+        </div>
+      </div>
+    </header>
+
+    <section class="pdf-kpis">
+      <div class="pdf-kpi">
+        <p>Total Cuentas</p>
+        <h3>{{ summary().totalCuentas }}</h3>
+      </div>
+      <div class="pdf-kpi">
+        <p>Credito Otorgado</p>
+        <h3>{{ formatCurrency(summary().totalCredito) }}</h3>
+      </div>
+      <div class="pdf-kpi">
+        <p>Saldo Pendiente</p>
+        <h3>{{ formatCurrency(summary().totalSaldo) }}</h3>
+      </div>
+      <div class="pdf-kpi">
+        <p>% Recuperacion</p>
+        <h3>{{ calcularPorcentajeRecuperacion() | number:'1.0-1' }}%</h3>
+      </div>
+    </section>
+
+    <section class="pdf-grid">
+      <div class="pdf-card">
+        <h4>Estado de cuentas</h4>
+        <div class="pdf-stat">
+          <span>Activas</span>
+          <strong>{{ summary().cuentasActivas }}</strong>
+        </div>
+        <div class="pdf-stat">
+          <span>En mora</span>
+          <strong>{{ summary().cuentasMora }}</strong>
+        </div>
+        <div class="pdf-progress">
+          <div class="bar" [style.width.%]="summary().totalCuentas ? (summary().cuentasActivas / summary().totalCuentas) * 100 : 0"></div>
+        </div>
+      </div>
+
+      <div class="pdf-card">
+        <h4>Analisis financiero</h4>
+        <div class="pdf-stat">
+          <span>Total recaudado</span>
+          <strong>{{ formatCurrency(summary().totalRecaudado) }}</strong>
+        </div>
+        <div class="pdf-stat">
+          <span>Promedio por cuenta</span>
+          <strong>{{ formatCurrency(summary().promedioSaldo) }}</strong>
+        </div>
+        <div class="pdf-stat">
+          <span>Credito disponible</span>
+          <strong>{{ formatCurrency(summary().totalCredito - summary().totalSaldo) }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="pdf-footer">
+      <p>ALPAY · Sistema de Gestion de Cobranza</p>
+    </section>
+  </div>
+</div>

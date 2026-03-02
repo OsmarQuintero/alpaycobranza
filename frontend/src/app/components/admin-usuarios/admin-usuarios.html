@@ -1,0 +1,154 @@
+﻿<div class="page-shell">
+  <header class="page-header">
+    <div>
+      <p class="page-eyebrow">Administración</p>
+      <h1>Usuarios del sistema</h1>
+      <p class="page-subtitle">Gestiona accesos, roles y estado de cada usuario.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" (click)="abrirCrear()">
+        <i class="bi bi-person-plus"></i> Nuevo usuario
+      </button>
+      <button class="btn btn-ghost" (click)="cargar()">
+        <i class="bi bi-arrow-clockwise"></i> Recargar
+      </button>
+    </div>
+  </header>
+
+  @if (successMessage()) {
+    <div class="alert alert-success">{{ successMessage() }}</div>
+  }
+  @if (errorMessage()) {
+    <div class="alert alert-danger">{{ errorMessage() }}</div>
+  }
+
+  <section class="card card-surface">
+    <div class="card-header">
+      <div>
+        <h3>Listado de usuarios</h3>
+        <p>Actualiza roles o desactiva accesos.</p>
+      </div>
+    </div>
+    <div class="card-body">
+      @if (isLoading()) {
+        <div class="card card-ghost p-4 text-center">Cargando usuarios...</div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-dark table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Creado</th>
+                <th class="text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (usuario of usuarios(); track usuario.id_usuario) {
+                <tr>
+                  <td>{{ usuario.nombre }}</td>
+                  <td>{{ usuario.email }}</td>
+                  <td><span class="badge badge-role">{{ usuario.rol }}</span></td>
+                  <td>
+                    <span class="badge" [class.badge-active]="usuario.estado === 'A'" [class.badge-inactive]="usuario.estado === 'I'">
+                      {{ usuario.estado || 'A' }}
+                    </span>
+                  </td>
+                  <td>{{ usuario.creado_en || '-' }}</td>
+                  <td class="text-end">
+                    <button class="btn btn-outline-info btn-sm me-2" (click)="abrirEditar(usuario)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" (click)="eliminar(usuario)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center">Sin usuarios registrados</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </section>
+
+  @if (showModal()) {
+    <div class="modal-backdrop" (click)="cerrarModal()"></div>
+    <div class="modal-sheet">
+      <div class="modal-card">
+        <header>
+          <h4>{{ isCreating() ? 'Crear usuario' : 'Editar usuario' }}</h4>
+          <button class="btn btn-icon" (click)="cerrarModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </header>
+        <div class="modal-body" *ngIf="isCreating(); else editarTpl">
+          <div class="mb-3">
+            <label>Nombre</label>
+            <input type="text" [(ngModel)]="nuevo.nombre" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="nuevo.email" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label>Rol</label>
+            <select [(ngModel)]="nuevo.rol" class="form-select">
+              <option value="OFICINA">OFICINA</option>
+              <option value="ADMIN">ADMIN</option>
+              <option value="COBRADOR">COBRADOR</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Contraseña (Debe llevar por lo menos 8 caracteres, una mayúscula, una minúscula y un número)</label>
+            <input type="password" [(ngModel)]="nuevo.password" class="form-control" />
+          </div>
+        </div>
+        <ng-template #editarTpl>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label>Nombre</label>
+              <input type="text" [(ngModel)]="editable.nombre" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label>Email</label>
+              <input type="email" [(ngModel)]="editable.email" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label>Rol</label>
+              <select [(ngModel)]="editable.rol" class="form-select">
+                <option value="ADMIN">ADMIN</option>
+                <option value="OFICINA">OFICINA</option>
+                <option value="COBRADOR">COBRADOR</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label>Estado</label>
+              <select [(ngModel)]="editable.estado" class="form-select">
+                <option value="A">Activo</option>
+                <option value="I">Inactivo</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label>Actualizar contraseña (opcional)</label>
+              <input type="password" [(ngModel)]="editable.password" class="form-control" />
+            </div>
+          </div>
+        </ng-template>
+        <footer>
+          <button class="btn btn-ghost" (click)="cerrarModal()">Cancelar</button>
+          <button class="btn btn-primary" *ngIf="isCreating(); else guardarTpl" (click)="crear()">Crear usuario</button>
+          <ng-template #guardarTpl>
+            <button class="btn btn-primary" (click)="guardar()">Guardar cambios</button>
+          </ng-template>
+        </footer>
+      </div>
+    </div>
+  }
+</div>

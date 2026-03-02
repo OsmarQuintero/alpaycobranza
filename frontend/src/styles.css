@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+:root {
+  --bg-900: #05070f;
+  --bg-800: #0b1220;
+  --bg-700: #0f172a;
+  --surface: rgba(10, 18, 32, 0.92);
+  --border: rgba(66, 90, 120, 0.4);
+  --text: #e2e8f0;
+  --muted: #9fb2c6;
+  --primary: #2563eb;
+  --accent: #0ea5e9;
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: radial-gradient(circle at top left, var(--bg-700), var(--bg-900) 60%);
+  color: var(--text);
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0 0 8px;
+}
+
+a {
+  color: inherit;
+}
+
+.table-dark {
+  --bs-table-bg: rgba(8, 14, 25, 0.65);
+  --bs-table-striped-bg: rgba(15, 23, 42, 0.6);
+  --bs-table-hover-bg: rgba(37, 99, 235, 0.12);
+  border-color: rgba(59, 85, 120, 0.4);
+}
+
+.form-control,
+.form-select {
+  background-color: rgba(8, 16, 30, 0.7);
+  border: 1px solid rgba(77, 103, 140, 0.45);
+  color: var(--text);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.25);
+}
+
+.btn {
+  border-radius: 10px;
+}

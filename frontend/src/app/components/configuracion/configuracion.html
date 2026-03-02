@@ -1,0 +1,313 @@
+<div class="container-fluid py-4">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="text-white fw-bold mb-2">
+        <i class="bi bi-gear me-2 text-secondary"></i>
+        Configuracion del Sistema
+      </h2>
+      <p class="text-white-50">Personaliza tu experiencia y ajusta los parametros del sistema</p>
+    </div>
+  </div>
+
+  @if (showSuccess()) {
+    <div class="alert alert-success glass-morphism">
+      <i class="bi bi-check-circle-fill me-2"></i>
+      Configuracion guardada exitosamente
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-danger glass-morphism">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      {{ errorMessage() }}
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="card glass-morphism p-4 text-center">Cargando configuracion...</div>
+  }
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <div class="card glass-morphism border-0">
+        <div class="card-header bg-transparent border-bottom border-white-10 py-3">
+          <h5 class="text-white fw-bold mb-0">
+            <i class="bi bi-person-circle me-2"></i>
+            Perfil de Usuario
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label text-white fw-semibold">Nombre Completo</label>
+            <input 
+              type="text" 
+              class="form-control bg-white-5 border-white-10 text-white"
+              [(ngModel)]="userConfig.nombre">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white fw-semibold">Email</label>
+            <input 
+              type="email" 
+              class="form-control bg-white-5 border-white-10 text-white"
+              [(ngModel)]="userConfig.email">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white fw-semibold">Telefono</label>
+            <input 
+              type="tel" 
+              class="form-control bg-white-5 border-white-10 text-white"
+              [(ngModel)]="userConfig.telefono"
+              placeholder="+52 123 456 7890">
+          </div>
+
+          @if (esCobrador()) {
+            <div class="mb-3">
+              <label class="form-label text-white fw-semibold">Foto de cobrador</label>
+              <div class="d-flex align-items-center gap-3">
+                <div class="avatar-preview">
+                  @if (fotoPreview()) {
+                    <img [src]="fotoPreview()" alt="Foto cobrador">
+                  } @else {
+                    <span>Sin foto</span>
+                  }
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="form-control bg-white-5 border-white-10 text-white"
+                  (change)="subirFoto($event)">
+              </div>
+              <small class="text-white-50">Solo cobradores pueden cargar foto.</small>
+            </div>
+          }
+
+          <div class="mb-3">
+            <label class="form-label text-white fw-semibold">Rol</label>
+            <input 
+              type="text" 
+              class="form-control bg-white-5 border-white-10 text-white"
+              [value]="currentUser()?.rol || 'CONSULTOR'"
+              disabled>
+          </div>
+
+          <button class="btn btn-outline-warning w-100" (click)="cambiarPassword()">
+            <i class="bi bi-key me-2"></i>
+            Cambiar Contrasena
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card glass-morphism border-0">
+        <div class="card-header bg-transparent border-bottom border-white-10 py-3">
+          <h5 class="text-white fw-bold mb-0">
+            <i class="bi bi-bell me-2"></i>
+            Notificaciones
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="form-check form-switch mb-3">
+            <input 
+              class="form-check-input" 
+              type="checkbox" 
+              id="notificaciones"
+              [(ngModel)]="userConfig.notificaciones">
+            <label class="form-check-label text-white" for="notificaciones">
+              Activar todas las notificaciones
+            </label>
+          </div>
+
+          <div class="form-check form-switch mb-3">
+            <input 
+              class="form-check-input" 
+              type="checkbox" 
+              id="emailAlerts"
+              [(ngModel)]="userConfig.emailAlerts">
+            <label class="form-check-label text-white" for="emailAlerts">
+              Alertas por correo electronico
+            </label>
+          </div>
+
+          <div class="form-check form-switch mb-3">
+            <input 
+              class="form-check-input" 
+              type="checkbox" 
+              id="whatsappAlerts"
+              [(ngModel)]="userConfig.whatsappAlerts">
+            <label class="form-check-label text-white" for="whatsappAlerts">
+              Alertas por WhatsApp
+            </label>
+          </div>
+
+          <hr class="border-white-10">
+
+          <p class="text-white-50 small mb-2">
+            <i class="bi bi-info-circle me-2"></i>
+            Recibiras notificaciones sobre:
+          </p>
+          <ul class="text-white-50 small">
+            <li>Pagos recibidos</li>
+            <li>Vencimientos proximos</li>
+            <li>Cuentas en mora</li>
+            <li>Actualizaciones del sistema</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-12">
+      <div class="card glass-morphism border-0">
+        <div class="card-header bg-transparent border-bottom border-white-10 py-3">
+          <h5 class="text-white fw-bold mb-0">
+            <i class="bi bi-sliders me-2"></i>
+            Parametros del Sistema
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <label class="form-label text-white fw-semibold">Tasa de Interes (%)</label>
+              <input 
+                type="number" 
+                class="form-control bg-white-5 border-white-10 text-white"
+                [(ngModel)]="systemConfig.tasaInteres"
+                step="0.1"
+                min="0">
+              <small class="text-white-50">Tasa de interes predeterminada</small>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label text-white fw-semibold">Dias de Gracia</label>
+              <input 
+                type="number" 
+                class="form-control bg-white-5 border-white-10 text-white"
+                [(ngModel)]="systemConfig.diasGracia"
+                min="0">
+              <small class="text-white-50">Dias antes de marcar mora</small>
+            </div>
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label text-white fw-semibold">Pago Minimo ($)</label>
+              <input 
+                type="number" 
+                class="form-control bg-white-5 border-white-10 text-white"
+                [(ngModel)]="systemConfig.montoMinimoPago"
+                step="10"
+                min="0">
+              <small class="text-white-50">Monto minimo de pago</small>
+            </div>
+          </div>
+
+          <hr class="border-white-10 my-4">
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-check form-switch mb-3">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  id="autoRecibos"
+                  [(ngModel)]="systemConfig.envioAutomaticoRecibos">
+                <label class="form-check-label text-white" for="autoRecibos">
+                  <strong>Envio automatico de recibos</strong>
+                  <br>
+                  <small class="text-white-50">Enviar recibos por WhatsApp al registrar pagos</small>
+                </label>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-check form-switch mb-3">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  id="recordatorios"
+                  [(ngModel)]="systemConfig.recordatoriosPago">
+                <label class="form-check-label text-white" for="recordatorios">
+                  <strong>Recordatorios de pago</strong>
+                  <br>
+                  <small class="text-white-50">Enviar recordatorios antes del vencimiento</small>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card glass-morphism border-0">
+        <div class="card-header bg-transparent border-bottom border-white-10 py-3">
+          <h5 class="text-white fw-bold mb-0">
+            <i class="bi bi-info-circle me-2"></i>
+            Informacion del Sistema
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="info-row">
+            <span class="text-white-50">Version</span>
+            <span class="text-white fw-bold">1.0.0</span>
+          </div>
+          <div class="info-row">
+            <span class="text-white-50">Ultima actualizacion</span>
+            <span class="text-white">22 Enero 2026</span>
+          </div>
+          <div class="info-row">
+            <span class="text-white-50">Base de datos</span>
+            <span class="badge bg-success">Conectado</span>
+          </div>
+          <div class="info-row">
+            <span class="text-white-50">API Backend</span>
+            <span class="badge bg-success">Activo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card glass-morphism border-0 border-danger">
+        <div class="card-header bg-transparent border-bottom border-danger py-3">
+          <h5 class="text-danger fw-bold mb-0">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            Zona de Peligro
+          </h5>
+        </div>
+        <div class="card-body">
+          <p class="text-white-50 mb-3">
+            Estas acciones son permanentes y no se pueden deshacer.
+          </p>
+          <button class="btn btn-outline-danger w-100 mb-2" (click)="limpiarHistorial()">
+            <i class="bi bi-trash me-2"></i>
+            Limpiar Historial
+          </button>
+          <button class="btn btn-outline-danger w-100 mb-2" (click)="restablecerConfiguracion()">
+            <i class="bi bi-arrow-clockwise me-2"></i>
+            Restablecer Configuracion
+          </button>
+          <button class="btn btn-danger w-100" (click)="cerrarTodasSesiones()">
+            <i class="bi bi-x-circle me-2"></i>
+            Cerrar Sesion en Todos los Dispositivos
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="d-flex gap-3 justify-content-end">
+        <button class="btn btn-outline-light btn-lg">
+          <i class="bi bi-x-circle me-2"></i>
+          Cancelar
+        </button>
+        <button class="btn btn-success btn-lg" (click)="guardarConfiguracion()">
+          <i class="bi bi-check-circle me-2"></i>
+          Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
