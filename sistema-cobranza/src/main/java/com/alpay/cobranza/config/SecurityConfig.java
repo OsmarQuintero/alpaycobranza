@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/contacto/**").permitAll()
+                        .requestMatchers("/api/suscripciones/**").permitAll()
                         .requestMatchers("/api/usuarios/registro").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/clientes/admin-expedientes").hasAnyAuthority("ROLE_ADMIN", "ADMIN")

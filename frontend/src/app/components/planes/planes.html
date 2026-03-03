@@ -1,0 +1,45 @@
+<div class="plans-shell">
+  <nav class="navbar navbar-expand-lg auth-nav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center py-0" routerLink="/">
+        <img src="assets/img/features/logo.png" alt="ALPAY" class="navbar-logo" />
+      </a>
+      <div class="ms-auto d-flex gap-2">
+        <button class="btn btn-outline-light" (click)="continuarSinPago()">Ya tengo plan</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="container py-5">
+    <p class="kicker">PLANES Y SUSCRIPCION</p>
+    <h1 class="title">Elige tu paquete antes de ingresar</h1>
+    <p class="subtitle">Selecciona ciclo mensual o anual y completa tu pago con tarjeta en checkout seguro.</p>
+
+    <div class="cycle-toggle mb-4">
+      <button class="btn" [class.active]="selectedCycle() === 'MENSUAL'" (click)="setCycle('MENSUAL')">Mensual</button>
+      <button class="btn" [class.active]="selectedCycle() === 'ANUAL'" (click)="setCycle('ANUAL')">Anual</button>
+    </div>
+
+    <div *ngIf="errorMessage()" class="alert alert-danger">{{ errorMessage() }}</div>
+
+    <div class="row g-4">
+      <div class="col-lg-4" *ngFor="let plan of planes()">
+        <article class="plan-card" [class.highlight]="plan.highlight">
+          <p class="plan-name">{{ plan.name }}</p>
+          <h3 class="plan-price">${{ getPrice(plan) | number }} <small>MXN</small></h3>
+          <p class="plan-cycle">por {{ selectedCycle() === 'ANUAL' ? 'anio' : 'mes' }}</p>
+
+          <ul>
+            <li *ngFor="let feature of plan.features">{{ feature }}</li>
+          </ul>
+
+          <button class="btn btn-primary w-100" [disabled]="isLoading()" (click)="checkout(plan)">
+            {{ isLoading() ? 'Procesando...' : 'Pagar y continuar' }}
+          </button>
+        </article>
+      </div>
+    </div>
+
+    <p class="note mt-4">La captura de tarjeta se realiza en una pasarela externa segura. ALPAY no almacena datos de tarjeta.</p>
+  </section>
+</div>

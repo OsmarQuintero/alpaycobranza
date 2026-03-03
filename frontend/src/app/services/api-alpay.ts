@@ -86,6 +86,34 @@ export interface ClienteAdminExpediente {
   selfieUrl?: string;
 }
 
+export interface Plan {
+  id: 'BASIC' | 'PRO' | 'EMPRESARIAL';
+  name: string;
+  mensual: number;
+  anual: number;
+  features: string[];
+  highlight?: boolean;
+}
+
+export interface PlanCheckoutRequest {
+  planId: string;
+  billingCycle: 'MENSUAL' | 'ANUAL';
+  email?: string;
+}
+
+export interface PlanesResponse {
+  planes: Plan[];
+  currency: string;
+}
+
+export interface CheckoutResponse {
+  checkoutUrl: string;
+  provider: string;
+  plan: string;
+  billingCycle: string;
+  status: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -93,7 +121,6 @@ export class ApiAlpayService {
   private http = inject(HttpClient);
   private readonly apiUrl = resolveApiUrl(environment.apiUrl);
 
-  // ==================== AUTH ====================
   login(credentials: LoginCredentials): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials);
   }
@@ -110,7 +137,6 @@ export class ApiAlpayService {
     return this.http.post<void>(`${this.apiUrl}/auth/reset-password`, { token, password });
   }
 
-  // ==================== USUARIOS (ADMIN) ====================
   getUsuarios(): Observable<UsuarioAdmin[]> {
     return this.http.get<UsuarioAdmin[]>(`${this.apiUrl}/usuarios`);
   }
@@ -133,7 +159,6 @@ export class ApiAlpayService {
     return this.http.post<UsuarioAdmin>(`${this.apiUrl}/usuarios/admin`, payload);
   }
 
-  // ==================== CONFIGURACION ====================
   getConfiguracion(usuarioId: number): Observable<ConfiguracionResponse> {
     return this.http.get<ConfiguracionResponse>(`${this.apiUrl}/configuracion/${usuarioId}`);
   }
@@ -142,7 +167,6 @@ export class ApiAlpayService {
     return this.http.put<ConfiguracionResponse>(`${this.apiUrl}/configuracion/${usuarioId}`, payload);
   }
 
-  // ==================== CUENTAS ====================
   getCuentas(): Observable<Cuenta[]> {
     return this.http.get<Cuenta[]>(`${this.apiUrl}/cuentas`);
   }
@@ -151,7 +175,6 @@ export class ApiAlpayService {
     return this.http.get<Cuenta[]>(`${this.apiUrl}/cuentas/cliente/${clienteId}`);
   }
 
-  // ==================== CLIENTES ====================
   getClientes(): Observable<Cliente[]> {
     return this.http.get<Cliente[]>(`${this.apiUrl}/clientes`);
   }
@@ -180,7 +203,6 @@ export class ApiAlpayService {
     return this.http.get<Cliente[]>(`${this.apiUrl}/clientes/buscar?nombre=${nombre}`);
   }
 
-  // ==================== PAGOS ====================
   registrarPago(pagoData: RegistrarPagoRequest): Observable<RegistrarPagoResponse> {
     return this.http.post<RegistrarPagoResponse>(`${this.apiUrl}/pagos/registrar`, pagoData);
   }
@@ -193,7 +215,6 @@ export class ApiAlpayService {
     return this.http.get<Pago[]>(`${this.apiUrl}/pagos/ultimos`);
   }
 
-  // ==================== PROMESAS DE PAGO ====================
   getPromesas(): Observable<PromesaPago[]> {
     return this.http.get<PromesaPago[]>(`${this.apiUrl}/promesas`);
   }
@@ -210,7 +231,6 @@ export class ApiAlpayService {
     return this.http.patch<PromesaPago>(`${this.apiUrl}/promesas/${promesaId}/estado`, { estado, fechaCumplimiento });
   }
 
-  // ==================== HISTORIAL ====================
   getHistorial(): Observable<Historial[]> {
     return this.http.get<Historial[]>(`${this.apiUrl}/historial`);
   }
@@ -219,7 +239,6 @@ export class ApiAlpayService {
     return this.http.get<Historial[]>(`${this.apiUrl}/historial/${cuentaId}`);
   }
 
-  // ==================== REPORTES ====================
   getResumenGeneral(): Observable<ReporteResumen> {
     return this.http.get<ReporteResumen>(`${this.apiUrl}/reportes/resumen`);
   }
@@ -238,5 +257,13 @@ export class ApiAlpayService {
       { email },
       { headers: { 'Content-Type': 'application/json' } }
     );
+  }
+
+  getPlanes(): Observable<PlanesResponse> {
+    return this.http.get<PlanesResponse>(`${this.apiUrl}/suscripciones/planes`);
+  }
+
+  createCheckout(payload: PlanCheckoutRequest): Observable<CheckoutResponse> {
+    return this.http.post<CheckoutResponse>(`${this.apiUrl}/suscripciones/checkout`, payload);
   }
 }

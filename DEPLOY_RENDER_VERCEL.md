@@ -66,3 +66,15 @@ Vercel settings:
 - `JDBCConnectionException`: `DB_URL/DB_USER/DB_PASS` are incorrect
 - `403 from frontend`: add frontend domain to `CORS_ALLOWED_ORIGIN_PATTERNS`
 - `404 on API`: wrong `environment.prod.ts` backend URL
+## 5) Payment checkout links (required for plans screen)
+
+Configure these env vars in backend service:
+
+- PAYMENT_BASIC_MENSUAL_URL
+- PAYMENT_BASIC_ANUAL_URL
+- PAYMENT_PRO_MENSUAL_URL
+- PAYMENT_PRO_ANUAL_URL
+- PAYMENT_EMPRESARIAL_MENSUAL_URL
+- PAYMENT_EMPRESARIAL_ANUAL_URL
+
+Use your provider hosted checkout links (Stripe/Conekta/MercadoPago).

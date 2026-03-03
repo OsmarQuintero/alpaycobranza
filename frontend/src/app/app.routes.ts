@@ -20,9 +20,11 @@ import { PublicAboutComponent } from './components/public-about/public-about';
 import { PublicFeaturesComponent } from './components/public-features/public-features';
 import { PublicServicesComponent } from './components/public-services/public-services';
 import { PublicPoliciesComponent } from './components/public-policies/public-policies';
+import { PlanesComponent } from './components/planes/planes';
 
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
+  { path: 'planes', component: PlanesComponent, canActivate: [publicGuard] },
   { path: 'login', component: LoginComponent, canActivate: [publicGuard] },
   { path: 'register', component: RegisterComponent, canActivate: [publicGuard] },
   { path: 'forgot-password', component: ForgotPasswordComponent, canActivate: [publicGuard] },
@@ -96,4 +98,5 @@ export const routes: Routes = [
 
   { path: '**', redirectTo: '/dashboard' }
 ];
+
 
