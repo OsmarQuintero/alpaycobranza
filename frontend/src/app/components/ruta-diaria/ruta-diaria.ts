@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges, inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Cliente } from '../../models/cliente.model';
+import type * as Leaflet from 'leaflet';
 
 interface RutaParada {
   nombre: string;
@@ -27,9 +28,10 @@ export class RutaDiariaComponent implements AfterViewInit, OnChanges, OnDestroy 
   @Input() titulo = 'Ruta diaria del cobrador';
 
   private platformId = inject(PLATFORM_ID);
-  private map: any;
-  private markersLayer: any;
-  private routeLine: any;
+  private L?: typeof Leaflet;
+  private map?: Leaflet.Map;
+  private markersLayer?: Leaflet.LayerGroup;
+  private routeLine?: Leaflet.Polyline;
   private currentPosition?: { lat: number; lng: number };
   private initAttempts = 0;
 
@@ -40,7 +42,7 @@ export class RutaDiariaComponent implements AfterViewInit, OnChanges, OnDestroy 
   errorMapa = '';
 
   ngAfterViewInit(): void {
-    this.initMap();
+    void this.initMap();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -50,23 +52,45 @@ export class RutaDiariaComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   ngOnDestroy(): void {
-    if (this.map) {
-      this.map.remove();
-    }
+    this.map?.remove();
   }
 
   private isBrowser(): boolean {
     return isPlatformBrowser(this.platformId);
   }
 
-  private initMap(): void {
+  private async loadLeaflet(): Promise<typeof Leaflet | null> {
+    if (this.L) return this.L;
+    if (!this.isBrowser()) return null;
+
+    try {
+      const leaflet = await import('leaflet');
+      this.L = leaflet;
+
+      const markerRetina = new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).toString();
+      const marker = new URL('leaflet/dist/images/marker-icon.png', import.meta.url).toString();
+      const shadow = new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).toString();
+
+      leaflet.Icon.Default.mergeOptions({
+        iconRetinaUrl: markerRetina,
+        iconUrl: marker,
+        shadowUrl: shadow
+      });
+
+      return this.L;
+    } catch {
+      return null;
+    }
+  }
+
+  private async initMap(): Promise<void> {
     if (!this.isBrowser()) return;
 
-    const L = (window as any).L;
+    const L = await this.loadLeaflet();
     if (!L) {
       this.initAttempts += 1;
       if (this.initAttempts <= 5) {
-        setTimeout(() => this.initMap(), 300);
+        setTimeout(() => void this.initMap(), 300);
         return;
       }
       this.errorMapa = 'No se pudo cargar el mapa.';
@@ -114,53 +138,48 @@ export class RutaDiariaComponent implements AfterViewInit, OnChanges, OnDestroy 
   }
 
   private actualizarRuta(): void {
-    if (!this.map || !this.mapaListo) return;
-
-    const L = (window as any).L;
-    if (!L) return;
+    if (!this.map || !this.mapaListo || !this.L) return;
 
     setTimeout(() => {
-      this.markersLayer.clearLayers();
+      this.markersLayer?.clearLayers();
       if (this.routeLine) {
         this.routeLine.remove();
-        this.routeLine = null;
+        this.routeLine = undefined;
       }
 
       const paradas = this.ordenarRuta(this.getClientesConCoords());
       this.paradas = paradas;
       this.calcularTotales();
 
-      if (paradas.length === 0) return;
+      if (paradas.length === 0 || !this.map || !this.L) return;
 
-      const puntos = paradas.map(p => [p.lat, p.lng]);
-      this.routeLine = L.polyline(puntos, { color: '#2dd4bf', weight: 4, opacity: 0.95 }).addTo(this.map);
+      const puntos: Array<[number, number]> = paradas.map(p => [p.lat, p.lng]);
+      this.routeLine = this.L.polyline(puntos, { color: '#2dd4bf', weight: 4, opacity: 0.95 }).addTo(this.map);
 
       paradas.forEach((p, index) => {
-        const marker = L.marker([p.lat, p.lng]).addTo(this.markersLayer);
-        marker.bindPopup(`<b>${index + 1}. ${p.nombre}</b><br>${p.direccion || 'Sin dirección'}<br>${p.telefono || ''}`);
+        const marker = this.L!.marker([p.lat, p.lng]).addTo(this.markersLayer!);
+        marker.bindPopup(`<b>${index + 1}. ${p.nombre}</b><br>${p.direccion || 'Sin direcciÃ³n'}<br>${p.telefono || ''}`);
       });
 
-      const bounds = L.latLngBounds(puntos as any);
+      const bounds = this.L.latLngBounds(puntos);
       this.map.fitBounds(bounds, { padding: [24, 24] });
     }, 0);
   }
 
   centrarEnMiUbicacion(): void {
     if (!this.isBrowser() || !navigator.geolocation) {
-      this.errorMapa = 'Geolocalización no disponible.';
+      this.errorMapa = 'GeolocalizaciÃ³n no disponible.';
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       pos => {
         this.currentPosition = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        if (this.map) {
-          this.map.setView([this.currentPosition.lat, this.currentPosition.lng], 13);
-        }
+        this.map?.setView([this.currentPosition.lat, this.currentPosition.lng], 13);
         this.actualizarRuta();
       },
       () => {
-        this.errorMapa = 'No se pudo obtener tu ubicación.';
+        this.errorMapa = 'No se pudo obtener tu ubicaciÃ³n.';
       },
       { enableHighAccuracy: true, timeout: 8000 }
     );
@@ -215,7 +234,6 @@ export class RutaDiariaComponent implements AfterViewInit, OnChanges, OnDestroy 
     if (this.completadas > 0 || this.paradas.some(p => p.estado === 'EN_CURSO')) return 'EN_CURSO';
     return 'SIN_INICIAR';
   }
-
 
   getGoogleMapsNavigationUrl(parada: RutaParada): string {
     const base = 'https://www.google.com/maps/dir/?api=1';

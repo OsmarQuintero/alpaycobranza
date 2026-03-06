@@ -19,22 +19,22 @@ import java.util.Map;
 @RequestMapping("/api/suscripciones")
 public class SuscripcionController {
 
-    @Value("${PAYMENT_BASIC_MENSUAL_URL:}")
+    @Value("${app.payment.basic-mensual-url:}")
     private String basicMensualUrl;
 
-    @Value("${PAYMENT_BASIC_ANUAL_URL:}")
+    @Value("${app.payment.basic-anual-url:}")
     private String basicAnualUrl;
 
-    @Value("${PAYMENT_PRO_MENSUAL_URL:}")
+    @Value("${app.payment.pro-mensual-url:}")
     private String proMensualUrl;
 
-    @Value("${PAYMENT_PRO_ANUAL_URL:}")
+    @Value("${app.payment.pro-anual-url:}")
     private String proAnualUrl;
 
-    @Value("${PAYMENT_EMPRESARIAL_MENSUAL_URL:}")
+    @Value("${app.payment.empresarial-mensual-url:}")
     private String empresarialMensualUrl;
 
-    @Value("${PAYMENT_EMPRESARIAL_ANUAL_URL:}")
+    @Value("${app.payment.empresarial-anual-url:}")
     private String empresarialAnualUrl;
 
     @GetMapping("/planes")
@@ -104,3 +104,4 @@ public class SuscripcionController {
         return value == null ? "" : value.trim().toUpperCase(Locale.ROOT);
     }
 }
+

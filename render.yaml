@@ -37,3 +37,18 @@ services:
         value: 10MB
       - key: MULTIPART_MAX_REQUEST_SIZE
         value: 20MB
+
+      - key: WHATSAPP_ENABLED
+        value: "false"
+      - key: WHATSAPP_PROVIDER
+        value: "meta"
+      - key: WHATSAPP_BASE_URL
+        value: "https://graph.facebook.com"
+      - key: WHATSAPP_API_VERSION
+        value: "v21.0"
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_DEFAULT_COUNTRY_CODE
+        value: "52"

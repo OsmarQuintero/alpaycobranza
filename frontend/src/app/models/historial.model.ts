@@ -1,4 +1,4 @@
-﻿import { Cuenta } from "./cuenta.model";
+import { Cuenta } from "./cuenta.model";
 
 export interface Historial {
   idHistorial: number;

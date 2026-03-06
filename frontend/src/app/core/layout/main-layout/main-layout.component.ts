@@ -6,6 +6,7 @@ import { filter } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { environment } from '../../../../environments/environment';
 import { resolveApiUrl } from '../../utils/api-url';
+import { UiDialogService } from '../../services/ui-dialog.service';
 
 interface MenuItem {
   icon: string;
@@ -333,6 +334,7 @@ export class MainLayoutComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   private apiUrl = resolveApiUrl(environment.apiUrl);
+  private dialog = inject(UiDialogService);
 
   sidebarCollapsed = signal(false);
   mobileSidebarOpen = signal(false);
@@ -429,12 +431,21 @@ export class MainLayoutComponent {
 
   currentSectionLabel(): string {
     const url = this.router.url;
-    const match = [...this.adminMenu, ...this.oficinaMenu, ...this.cobradorMenu].find(item => url.startsWith(item.route));
+    const match = [...this.adminMenu, ...this.oficinaMenu, ...this.cobradorMenu]
+      .sort((a, b) => b.route.length - a.route.length)
+      .find(item => url.startsWith(item.route));
     return match?.label || 'Panel';
   }
 
-  onLogout(): void {
-    if (confirm('Estas seguro que deseas cerrar sesion?')) {
+  async onLogout(): Promise<void> {
+    const confirmed = await this.dialog.confirm({
+      title: 'Cerrar sesion',
+      message: '?Estas seguro de que deseas cerrar sesion?',
+      confirmText: 'Cerrar sesion',
+      cancelText: 'Cancelar'
+    });
+
+    if (confirmed) {
       this.authService.logout();
     }
   }

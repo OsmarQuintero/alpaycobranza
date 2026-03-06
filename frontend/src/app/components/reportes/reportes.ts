@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ApiAlpayService } from '../../services/api-alpay';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { UiNotificationService } from '../../core/services/ui-notification.service';
+import { UiDialogService } from '../../core/services/ui-dialog.service';
 
 interface ReporteSummary {
   totalCuentas: number;
@@ -24,6 +26,8 @@ interface ReporteSummary {
 })
 export class ReportesComponent implements OnInit {
   private apiService = inject(ApiAlpayService);
+  private ui = inject(UiNotificationService);
+  private dialog = inject(UiDialogService);
 
   summary = signal<ReporteSummary>({
     totalCuentas: 0,
@@ -65,8 +69,8 @@ export class ReportesComponent implements OnInit {
 
         this.isLoading.set(false);
       },
-      error: (err) => {
-        console.error('Error:', err);
+      error: () => {
+        this.ui.error('No se pudieron cargar los reportes.');
         this.isLoading.set(false);
       }
     });
@@ -87,7 +91,10 @@ export class ReportesComponent implements OnInit {
 
   async exportarPDF(): Promise<void> {
     const data = document.getElementById('report-content-pdf');
-    if (!data) return;
+    if (!data) {
+      this.ui.error('No se encontro el contenido para exportar PDF.');
+      return;
+    }
 
     const prevDisplay = data.style.display;
     const prevPosition = data.style.position;
@@ -116,6 +123,8 @@ export class ReportesComponent implements OnInit {
     data.style.position = prevPosition;
     data.style.left = prevLeft;
     data.style.top = prevTop;
+
+    this.ui.success('Reporte PDF generado.');
   }
 
   exportarExcel(): void {
@@ -127,19 +136,32 @@ export class ReportesComponent implements OnInit {
         a.download = 'Reporte_Alpay.xlsx';
         a.click();
         window.URL.revokeObjectURL(url);
+        this.ui.success('Reporte Excel generado.');
       },
-      error: () => alert('Error al generar Excel')
+      error: () => this.ui.error('Error al generar Excel')
     });
   }
 
-  enviarPorEmail(): void {
-    const email = prompt('Ingresa el correo');
+  async enviarPorEmail(): Promise<void> {
+    const email = await this.dialog.prompt({
+      title: 'Enviar reporte por correo',
+      message: 'Captura el correo al que se enviara el reporte.',
+      placeholder: 'correo@dominio.com',
+      confirmText: 'Enviar',
+      cancelText: 'Cancelar'
+    });
 
     if (!email) return;
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.ui.warning('Correo invalido. Verifica el formato.');
+      return;
+    }
+
     this.apiService.enviarReportePorEmail(email).subscribe({
-      next: () => alert('Reporte enviado'),
-      error: () => alert('Error al enviar correo')
+      next: () => this.ui.success('Reporte enviado por correo.'),
+      error: () => this.ui.error('Error al enviar correo')
     });
   }
 }

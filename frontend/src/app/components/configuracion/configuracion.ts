@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiAlpayService, ConfiguracionRequest } from '../../services/api-alpay';
+import { UiDialogService } from '../../core/services/ui-dialog.service';
 
 @Component({
   selector: 'app-configuracion',
@@ -15,6 +16,7 @@ import { ApiAlpayService, ConfiguracionRequest } from '../../services/api-alpay'
 export class ConfiguracionComponent implements OnInit {
   private authService = inject(AuthService);
   private api = inject(ApiAlpayService);
+  private dialog = inject(UiDialogService);
 
   currentUser = this.authService.currentUser;
   showSuccess = signal(false);
@@ -124,34 +126,67 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
-  cambiarPassword(): void {
-    const nuevaPassword = prompt('Ingresa tu nueva contrasena:');
-    if (nuevaPassword) {
-      alert('Contrasena actualizada correctamente');
-    }
+  async cambiarPassword(): Promise<void> {
+    const nuevaPassword = await this.dialog.prompt({
+      title: 'Cambiar contrasena',
+      message: 'Ingresa la nueva contrasena para tu cuenta.',
+      placeholder: 'Nueva contrasena',
+      confirmText: 'Actualizar',
+      cancelText: 'Cancelar'
+    });
+
+    if (!nuevaPassword) return;
+
+    this.showSuccess.set(true);
+    setTimeout(() => this.showSuccess.set(false), 3000);
   }
 
-  limpiarHistorial(): void {
-    if (confirm('¿Estas seguro de eliminar todo el historial?\n\nEsta accion NO se puede deshacer.')) {
-      alert('Historial eliminado correctamente');
-    }
+  async limpiarHistorial(): Promise<void> {
+    const confirmado = await this.dialog.confirm({
+      title: 'Limpiar historial',
+      message: 'Esta accion eliminara el historial y no se puede deshacer.',
+      confirmText: 'Limpiar historial',
+      cancelText: 'Cancelar',
+      tone: 'danger'
+    });
+
+    if (!confirmado) return;
+
+    this.showSuccess.set(true);
+    setTimeout(() => this.showSuccess.set(false), 3000);
   }
 
-  restablecerConfiguracion(): void {
-    if (confirm('¿Restablecer toda la configuracion a valores por defecto?')) {
-      this.systemConfig = {
-        tasaInteres: 3.5,
-        diasGracia: 5,
-        montoMinimoPago: 100,
-        envioAutomaticoRecibos: true,
-        recordatoriosPago: true
-      };
-      alert('Configuracion restablecida');
-    }
+  async restablecerConfiguracion(): Promise<void> {
+    const confirmado = await this.dialog.confirm({
+      title: 'Restablecer configuracion',
+      message: 'Se restableceran los parametros del sistema a valores por defecto.',
+      confirmText: 'Restablecer',
+      cancelText: 'Cancelar'
+    });
+
+    if (!confirmado) return;
+
+    this.systemConfig = {
+      tasaInteres: 3.5,
+      diasGracia: 5,
+      montoMinimoPago: 100,
+      envioAutomaticoRecibos: true,
+      recordatoriosPago: true
+    };
+
+    this.showSuccess.set(true);
+    setTimeout(() => this.showSuccess.set(false), 3000);
   }
 
-  cerrarTodasSesiones(): void {
-    if (confirm('¿Cerrar sesion en todos los dispositivos?')) {
+  async cerrarTodasSesiones(): Promise<void> {
+    const confirmado = await this.dialog.confirm({
+      title: 'Cerrar sesiones',
+      message: '?Deseas cerrar la sesion actual y salir del sistema?',
+      confirmText: 'Cerrar sesion',
+      cancelText: 'Cancelar'
+    });
+
+    if (confirmado) {
       this.authService.logout();
     }
   }

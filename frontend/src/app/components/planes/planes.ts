@@ -1,7 +1,8 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ApiAlpayService, Plan, PlanCheckoutRequest } from '../../services/api-alpay';
+import { SubscriptionService } from '../../core/services/subscription.service';
 
 @Component({
   selector: 'app-planes',
@@ -13,17 +14,33 @@ import { ApiAlpayService, Plan, PlanCheckoutRequest } from '../../services/api-a
 export class PlanesComponent implements OnInit {
   private readonly api = inject(ApiAlpayService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly subscription = inject(SubscriptionService);
 
   readonly planes = signal<Plan[]>([]);
   readonly selectedCycle = signal<'MENSUAL' | 'ANUAL'>('MENSUAL');
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
+  readonly returnUrl = signal('/dashboard');
 
   ngOnInit(): void {
+    const qReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    this.returnUrl.set(qReturnUrl || '/dashboard');
+
     this.planes.set(this.getFallbackPlanes());
+
     if (isPlatformBrowser(this.platformId)) {
+      this.detectPaymentResult();
       this.loadPlanes();
+    }
+  }
+
+  private detectPaymentResult(): void {
+    const status = (this.route.snapshot.queryParamMap.get('status') || '').toUpperCase();
+    if (status === 'SUCCESS' || status === 'PAID' || status === 'ACTIVE') {
+      this.subscription.setActiveLocal(true);
+      void this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl() } });
     }
   }
 
@@ -62,7 +79,14 @@ export class PlanesComponent implements OnInit {
           window.location.href = res.checkoutUrl;
           return;
         }
-        this.errorMessage.set('No se recibio URL de pago.');
+
+        if ((res.status || '').toUpperCase() === 'ACTIVE') {
+          this.subscription.setActiveLocal(true);
+          void this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl() } });
+          return;
+        }
+
+        this.errorMessage.set('No se recibió URL de pago válida.');
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -72,7 +96,13 @@ export class PlanesComponent implements OnInit {
   }
 
   continuarSinPago(): void {
-    this.router.navigate(['/login']);
+    this.subscription.checkActive().subscribe(active => {
+      if (!active) {
+        this.errorMessage.set('No encontramos una suscripción activa para continuar.');
+        return;
+      }
+      void this.router.navigate(['/login'], { queryParams: { returnUrl: this.returnUrl() } });
+    });
   }
 
   private getFallbackPlanes(): Plan[] {

@@ -1,7 +1,8 @@
-﻿import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiAlpayService, UsuarioAdmin, UsuarioUpdateRequest } from '../../services/api-alpay';
+import { UiDialogService } from '../../core/services/ui-dialog.service';
 
 interface NuevoUsuarioPayload {
   nombre: string;
@@ -19,6 +20,7 @@ interface NuevoUsuarioPayload {
 })
 export class AdminUsuariosComponent {
   private api = inject(ApiAlpayService);
+  private dialog = inject(UiDialogService);
 
   usuarios = signal<UsuarioAdmin[]>([]);
   isLoading = signal(true);
@@ -129,8 +131,16 @@ export class AdminUsuariosComponent {
     });
   }
 
-  eliminar(usuario: UsuarioAdmin): void {
-    if (!confirm(`Eliminar al usuario ${usuario.nombre}?`)) return;
+  async eliminar(usuario: UsuarioAdmin): Promise<void> {
+    const confirmado = await this.dialog.confirm({
+      title: 'Eliminar usuario',
+      message: `?Deseas eliminar al usuario ${usuario.nombre}?`,
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+      tone: 'danger'
+    });
+
+    if (!confirmado) return;
 
     this.api.eliminarUsuario(usuario.id_usuario).subscribe({
       next: () => this.cargar(),

@@ -1,9 +1,13 @@
 package com.alpay.cobranza.config;
 
+import com.alpay.cobranza.exception.ApiErrorResponse;
 import com.alpay.cobranza.security.JwtAuthenticationFilter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,19 +35,41 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            mapper.writeValue(
+                                    response.getOutputStream(),
+                                    ApiErrorResponse.of(401, "UNAUTHORIZED", "Debes iniciar sesion", null, request.getRequestURI())
+                            );
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            mapper.writeValue(
+                                    response.getOutputStream(),
+                                    ApiErrorResponse.of(403, "ACCESS_DENIED", "No tienes permisos para esta operacion", null, request.getRequestURI())
+                            );
+                        })
+                )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/healthz").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/").permitAll()
                         .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/api/healthz").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/contacto/**").permitAll()
                         .requestMatchers("/api/suscripciones/**").permitAll()
                         .requestMatchers("/api/usuarios/registro").permitAll()

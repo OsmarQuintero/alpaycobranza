@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import jsPDF from 'jspdf';
 import { environment } from '../../../environments/environment';
 import { resolveApiUrl } from '../../core/utils/api-url';
+import { UiDialogService } from '../../core/services/ui-dialog.service';
 
 interface Cliente {
   id?: number;
@@ -54,6 +55,7 @@ interface DireccionSugerida {
 export class ClientesComponent implements OnInit {
   private http = inject(HttpClient);
   private readonly URL = resolveApiUrl(environment.apiUrl);
+  private dialog = inject(UiDialogService);
 
   clientes = signal<Cliente[]>([]);
   clienteSeleccionado = signal<Cliente | null>(null);
@@ -312,7 +314,7 @@ export class ClientesComponent implements OnInit {
   private handleGuardarError(err: any): void {
     this.isSaving.set(false);
 
-    const detalle = err?.error?.detalle;
+    const detalle = err?.error?.detalle ?? err?.error?.details;
     const message = err?.error?.message;
     const fallback = err?.error?.error;
 
@@ -341,8 +343,16 @@ export class ClientesComponent implements OnInit {
     console.error('Error guardando cliente', err);
   }
 
-  eliminarCliente(cliente: Cliente): void {
-    if (!confirm(`¿Seguro que deseas eliminar a ${cliente.nombre}?`)) return;
+  async eliminarCliente(cliente: Cliente): Promise<void> {
+    const confirmado = await this.dialog.confirm({
+      title: 'Eliminar cliente',
+      message: `Se eliminara el cliente ${cliente.nombre}. Esta accion no se puede deshacer.`,
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+      tone: 'danger'
+    });
+
+    if (!confirmado) return;
 
     this.http.delete(`${this.URL}/clientes/${cliente.id}`).subscribe({
       next: () => {
@@ -649,3 +659,4 @@ export class ClientesComponent implements OnInit {
     return parts[parts.length - 1] || path;
   }
 }
+

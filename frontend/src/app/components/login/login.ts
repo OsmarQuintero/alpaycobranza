@@ -1,4 +1,4 @@
-﻿// src/app/components/login/login.ts
+// src/app/components/login/login.ts
 import { Component, inject, signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +27,11 @@ export class LoginComponent {
   isLoading = signal<boolean>(false);
   showPassword = signal(false);
 
+  private getHomeRouteByRole(role?: string): string {
+    if (role === 'ADMIN') return '/admin';
+    return '/dashboard';
+  }
+
   onLogin(): void {
     if (!this.credentials.email || !this.credentials.password) {
       this.errorMessage.set('Por favor completa todos los campos');
@@ -44,12 +49,15 @@ export class LoginComponent {
 
     this.authService.login(this.credentials).subscribe({
       next: () => {
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
-        this.router.navigate([returnUrl]);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || this.getHomeRouteByRole(this.authService.getCurrentUser()?.rol);
+        void this.router.navigate([returnUrl]);
       },
       error: (error) => {
         if (error.status === 401) {
           this.errorMessage.set('Credenciales incorrectas');
+        } else if (error.status === 429) {
+          const retry = error?.error?.retryAfterSeconds;
+          this.errorMessage.set(retry ? `Demasiados intentos. Intenta de nuevo en ${retry} segundos.` : 'Demasiados intentos. Intenta más tarde.');
         } else if (error.status === 0) {
           this.errorMessage.set('No se puede conectar con el servidor');
         } else {

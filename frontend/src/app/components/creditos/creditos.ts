@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiAlpayService } from '../../services/api-alpay';
 import { Cuenta } from '../../models/cuenta.model';
+import { UiNotificationService } from '../../core/services/ui-notification.service';
+import { UiDialogService } from '../../core/services/ui-dialog.service';
 
 @Component({
   selector: 'app-creditos',
@@ -14,6 +16,8 @@ import { Cuenta } from '../../models/cuenta.model';
 })
 export class CreditosComponent implements OnInit {
   private apiService = inject(ApiAlpayService);
+  private ui = inject(UiNotificationService);
+  private dialog = inject(UiDialogService);
 
   cuentas = signal<Cuenta[]>([]);
   filtroEstatus = signal<'TODOS' | 'ACTIVA' | 'SUSPENDIDA' | 'CERRADA'>('TODOS');
@@ -30,8 +34,8 @@ export class CreditosComponent implements OnInit {
         this.cuentas.set(data);
         this.isLoading.set(false);
       },
-      error: (err) => {
-        console.error('Error:', err);
+      error: () => {
+        this.ui.error('No se pudieron cargar los creditos.');
         this.isLoading.set(false);
       }
     });
@@ -72,21 +76,33 @@ export class CreditosComponent implements OnInit {
     return 'success';
   }
 
-  verDetalles(cuenta: Cuenta): void {
+  async verDetalles(cuenta: Cuenta): Promise<void> {
     const porcentaje = this.getPorcentajeUtilizado(cuenta);
     const disponible = cuenta.limiteCredito - cuenta.saldo;
-    
-    alert(
-      `📊 DETALLES DE LA CUENTA\n\n` +
-      `Cliente: ${cuenta.clienteNombre}\n` +
-      `Cuenta #: ${cuenta.id}\n\n` +
-      `💳 Límite de crédito: ${this.formatCurrency(cuenta.limiteCredito)}\n` +
-      `💰 Saldo actual: ${this.formatCurrency(cuenta.saldo)}\n` +
-      `✅ Disponible: ${this.formatCurrency(disponible)}\n\n` +
-      `📈 Utilización: ${porcentaje.toFixed(1)}%\n` +
-      `💹 Tasa de interés: ${cuenta.tasaInteres}%\n` +
-      `📅 Día de corte: ${cuenta.diaCorte}\n` +
-      `🔖 Estatus: ${cuenta.estatus}`
-    );
+
+    await this.dialog.alert({
+      title: 'Detalle de la cuenta',
+      message:
+        `Cliente: ${cuenta.clienteNombre}
+` +
+        `Cuenta #: ${cuenta.id}
+
+` +
+        `Limite de credito: ${this.formatCurrency(cuenta.limiteCredito)}
+` +
+        `Saldo actual: ${this.formatCurrency(cuenta.saldo)}
+` +
+        `Disponible: ${this.formatCurrency(disponible)}
+
+` +
+        `Utilizacion: ${porcentaje.toFixed(1)}%
+` +
+        `Tasa de interes: ${cuenta.tasaInteres}%
+` +
+        `Dia de corte: ${cuenta.diaCorte}
+` +
+        `Estatus: ${cuenta.estatus}`,
+      confirmText: 'Cerrar'
+    });
   }
 }

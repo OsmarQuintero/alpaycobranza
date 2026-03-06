@@ -16,22 +16,4 @@ public class  AlpayBackendApplication {
 		SpringApplication.run(AlpayBackendApplication.class, args);
 	}
 
-	@Bean
-    CommandLineRunner initAdmin(UsuarioRepository repo, PasswordEncoder encoder) {
-        return args -> {
-            if (repo.findByEmail("admin@alpay.mx").isEmpty()) {
-                Usuario admin = new Usuario();
-                admin.setNombre("Administrador");
-                admin.setEmail("admin@alpay.mx");
-                admin.setPassword(encoder.encode("Lechuga23@"));
-                admin.setRol("ADMIN");
-                admin.setEstado("A");
-                repo.save(admin);
-
-                System.out.println("✅ ADMIN CREADO AUTOMATICAMENTE");
-            } else {
-                System.out.println("ℹ️ ADMIN YA EXISTE");
-            }
-        };
-    }
 }

@@ -1,4 +1,4 @@
-﻿import { Cliente } from "./cliente.model";
+import { Cliente } from "./cliente.model";
 
 export interface Cuenta {
   id: number;

@@ -4,6 +4,8 @@ import com.alpay.cobranza.model.Cuenta;
 import com.alpay.cobranza.model.Pago;
 import com.alpay.cobranza.repository.CuentaRepository;
 import com.alpay.cobranza.repository.PagoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +15,8 @@ import java.util.List;
 
 @Service
 public class CobranzaService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CobranzaService.class);
 
     private final CuentaRepository cuentaRepository;
     private final PagoRepository pagoRepository;
@@ -55,7 +59,7 @@ public class CobranzaService {
         try {
             whatsAppService.enviarReciboPago(cuenta.getCliente(), pago, nuevoSaldo);
         } catch (Exception e) {
-            System.err.println("Error al enviar WhatsApp: " + e.getMessage());
+            logger.warn("Error al enviar WhatsApp API: {}", e.getMessage());
             // No bloqueamos la transacción si falla el mensaje
         }
 

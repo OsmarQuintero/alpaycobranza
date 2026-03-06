@@ -33,7 +33,9 @@
               "canvg",
               "rgbcolor",
               "raf",
-              "core-js"
+              "core-js",
+              "bootstrap/dist/js/bootstrap.bundle.min.js",
+              "leaflet"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",

@@ -114,6 +114,31 @@ export interface CheckoutResponse {
   status: string;
 }
 
+export interface SubscriptionStatusResponse {
+  active: boolean;
+  planId?: string;
+  expiresAt?: string;
+}
+
+export interface WhatsAppStatusResponse {
+  enabled: boolean;
+  configured: boolean;
+  provider: string;
+  apiVersion: string;
+  phoneNumberId: string;
+  defaultCountryCode: string;
+}
+
+export interface WhatsAppTestRequest {
+  telefono: string;
+  mensaje: string;
+}
+
+export interface WhatsAppTestResponse {
+  success: boolean;
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -265,5 +290,17 @@ export class ApiAlpayService {
 
   createCheckout(payload: PlanCheckoutRequest): Observable<CheckoutResponse> {
     return this.http.post<CheckoutResponse>(`${this.apiUrl}/suscripciones/checkout`, payload);
+  }
+
+  getSubscriptionStatus(): Observable<SubscriptionStatusResponse> {
+    return this.http.get<SubscriptionStatusResponse>(`${this.apiUrl}/suscripciones/estado`);
+  }
+
+  getWhatsAppStatus(): Observable<WhatsAppStatusResponse> {
+    return this.http.get<WhatsAppStatusResponse>(`${this.apiUrl}/whatsapp/status`);
+  }
+
+  sendWhatsAppTest(payload: WhatsAppTestRequest): Observable<WhatsAppTestResponse> {
+    return this.http.post<WhatsAppTestResponse>(`${this.apiUrl}/whatsapp/test`, payload);
   }
 }

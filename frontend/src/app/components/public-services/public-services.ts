@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { PublicNavbarComponent } from '../public-shared/public-navbar.component';
+import { PublicFooterComponent } from '../public-shared/public-footer.component';
 
 @Component({
   selector: 'app-public-services',
   standalone: true,
-  imports: [RouterModule],
+  imports: [PublicNavbarComponent, PublicFooterComponent],
   templateUrl: './public-services.html',
   styleUrls: ['../public-shared/public-pages.css', './public-services.css']
 })
@@ -20,7 +21,7 @@ export class PublicServicesComponent {
     },
     {
       name: 'Analitica y reporteo',
-      detail: 'Diseño de indicadores para seguimiento de recuperacion y riesgo.'
+      detail: 'DiseÃ±o de indicadores para seguimiento de recuperacion y riesgo.'
     },
     {
       name: 'Soporte evolutivo',
@@ -28,4 +29,3 @@ export class PublicServicesComponent {
     }
   ];
 }
-

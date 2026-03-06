@@ -29,7 +29,10 @@
   "dataGroups": [
     {
       "name": "api",
-      "urls": ["/api/**"],
+      "urls": [
+        "/api/**",
+        "https://alpaycobranza.onrender.com/api/**"
+      ],
       "cacheConfig": {
         "strategy": "freshness",
         "maxSize": 100,
